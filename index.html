@@ -622,6 +622,7 @@ body.enter .rings{ opacity:.92; }
 @media (prefers-reduced-motion:reduce){
   .written{ clip-path:none; transition:none }
   .hero-frame::after, .next-badge::before, .candle.lit .flame{ animation:none }
+  .dock, body.enter .dock.shown{ transition:opacity .2s ease, visibility 0s }
   h2.display .ink{ clip-path:none; transition:none }
   .fleuron svg{ animation:none }
   .vf-inner{ transition:none }
@@ -639,8 +640,10 @@ body.enter .rings{ opacity:.92; }
   border:1px solid rgba(91,73,51,.65);
   box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(91,73,51,.28),
               0 18px 40px -18px rgba(56,36,16,.6);
-  opacity:0; pointer-events:none; transition:opacity .8s ease .4s; }
-body.enter .dock{ opacity:1; pointer-events:auto; }
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .55s ease, transform .8s cubic-bezier(.19,1,.22,1), visibility 0s linear .8s; }
+body.enter .dock.shown{ opacity:1; visibility:visible; pointer-events:auto;
+  transition:opacity .7s ease, transform .9s cubic-bezier(.19,1,.22,1), visibility 0s; }
 .dock a{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
   text-decoration:none; color:var(--ink); font-family:var(--corm); font-weight:600;
   font-size:1rem; line-height:1; letter-spacing:.01em; white-space:nowrap;
@@ -652,12 +655,14 @@ body.enter .dock{ opacity:1; pointer-events:auto; }
 .dock a:focus-visible{ outline:2px solid var(--gold); outline-offset:-4px; }
 
 @media (min-width:1180px){
-  .dock{ left:30px; top:50%; transform:translateY(-50%); flex-direction:column; padding:7px; gap:2px; }
+  .dock{ left:30px; top:50%; transform:translate(-36px,-50%); flex-direction:column; padding:7px; gap:2px; }
+  body.enter .dock.shown{ transform:translate(0,-50%); }
   .dock a{ width:78px; padding:12px 4px 11px; }
 }
 @media (max-width:1179.98px){
-  .dock{ left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%);
+  .dock{ left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translate(-50%,36px);
     width:min(calc(100vw - 22px), 540px); padding:5px; }
+  body.enter .dock.shown{ transform:translate(-50%,0); }
   .dock a{ flex:1 1 0; min-width:0; padding:9px 1px 8px; font-size:.9rem; gap:5px; }
   .dock svg{ width:23px; height:23px; }
   body{ padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
@@ -1698,6 +1703,7 @@ var RSVP_ENDPOINT = '';
     var line = innerHeight * .42, current = 'top';
     marks.forEach(function(m){ if (m[1] && m[1].getBoundingClientRect().top <= line) current = m[0]; });
     if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) current = 'rsvp';
+    dock.classList.toggle('shown', current !== 'top');
     links.forEach(function(a){
       var on = a.getAttribute('data-spy') === current;
       a.classList.toggle('on', on);
