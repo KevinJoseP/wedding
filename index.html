@@ -356,6 +356,9 @@ body.enter .crest .mono-l{ animation:softFade 1.6s ease .9s backwards; }
   letter-spacing:.34em; text-indent:.34em; padding:16px 40px; cursor:pointer;
   box-shadow:0 14px 28px -14px rgba(89,30,20,.8); transition:all .3s; }
 .seal-btn:hover{ background:var(--rust-deep); transform:translateY(-1px); }
+.seal-btn[disabled]{ opacity:.65; cursor:progress; transform:none; }
+.hp{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+.rsvp-error{ margin-top:20px; text-align:center; font-style:italic; color:var(--rust); }
 .sealed{ text-align:center; padding:30px 10px; display:none; }
 .sealed.show{ display:block; animation:fadein 1s ease both; }
 @keyframes fadein{ from{ opacity:0; transform:translateY(14px) } to{ opacity:1; transform:none } }
@@ -485,8 +488,10 @@ body.enter .hero-frame .scroll-hint{ animation:softIn 1.2s 3.4s both; }
 .vf-front,.vf-back{ backface-visibility:hidden; -webkit-backface-visibility:hidden; height:100%; }
 .vf-back{ position:absolute; inset:0; transform:rotateY(-180deg);
   display:flex; flex-direction:column; justify-content:center; }
-.turn-hint{ display:block; margin-top:18px; font-family:var(--script);
-  font-size:1.3rem; color:var(--gold); }
+.turn-hint{ display:inline-block; margin-top:22px; font-family:var(--fellsc);
+  font-size:.82rem; letter-spacing:.22em; text-indent:.22em; color:var(--rust);
+  border:1px solid rgba(125,47,34,.5); padding:9px 18px 8px; }
+.vf-back .turn-hint{ margin-top:14px; border:0; padding:0; color:var(--ink-soft); }
 .postmark{ position:absolute; top:16px; right:14px; width:72px; height:72px;
   color:var(--rust); opacity:.5; transform:rotate(9deg); pointer-events:none; }
 
@@ -627,6 +632,44 @@ body.enter .rings{ opacity:.92; }
 }
 
 /* ————————————————————————————————————————————————
+   THE DOCK — floating menu (left rail on desktop, bottom bar on phones)
+———————————————————————————————————————————————— */
+.dock{ position:fixed; z-index:46; display:flex;
+  background:rgba(238,228,203,.95); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  border:1px solid rgba(91,73,51,.65);
+  box-shadow: inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(91,73,51,.28),
+              0 18px 40px -18px rgba(56,36,16,.6);
+  opacity:0; pointer-events:none; transition:opacity .8s ease .4s; }
+body.enter .dock{ opacity:1; pointer-events:auto; }
+.dock a{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  text-decoration:none; color:var(--ink); font-family:var(--corm); font-weight:600;
+  font-size:1rem; line-height:1; letter-spacing:.01em; white-space:nowrap;
+  transition:color .25s ease, background .25s ease; -webkit-tap-highlight-color:transparent; }
+.dock svg{ width:25px; height:25px; flex:none; fill:none; stroke:currentColor; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round; }
+.dock a:hover{ color:var(--rust); background:rgba(125,47,34,.08); }
+.dock a.on{ color:#f6ecd4; background:var(--rust); }
+.dock a:focus-visible{ outline:2px solid var(--gold); outline-offset:-4px; }
+
+@media (min-width:1180px){
+  .dock{ left:30px; top:50%; transform:translateY(-50%); flex-direction:column; padding:7px; gap:2px; }
+  .dock a{ width:78px; padding:12px 4px 11px; }
+}
+@media (max-width:1179.98px){
+  .dock{ left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%);
+    width:min(calc(100vw - 22px), 540px); padding:5px; }
+  .dock a{ flex:1 1 0; min-width:0; padding:9px 1px 8px; font-size:.9rem; gap:5px; }
+  .dock svg{ width:23px; height:23px; }
+  body{ padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
+  .rings{ bottom:calc(90px + env(safe-area-inset-bottom, 0px)); }
+  nav a{ display:none; }
+  body.enter .rings:not(.near){ opacity:0; }
+}
+@media (max-width:700px){
+  .rings{ bottom:calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ————————————————————————————————————————————————
    FOOTER
 ———————————————————————————————————————————————— */
 footer{ text-align:center; padding:60px 20px 70px; position:relative; z-index:2; }
@@ -648,7 +691,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
     <p class="letter-kicker">a letter has arrived</p>
     <div class="envelope">
       <div class="env-back"></div>
-      <div class="env-letter"><div>K &amp; T<small>holy matrimony · mmxxvii</small></div></div>
+      <div class="env-letter"><div>K &amp; T<small>holy matrimony · 2027</small></div></div>
       <div class="env-front"></div>
       <div class="env-addr" id="env-addr">for you, with love</div>
       <div class="env-flap"></div>
@@ -689,7 +732,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
 </nav>
 
 <!-- ═══════════════ HERO ═══════════════ -->
-<header class="hero">
+<header class="hero" id="top">
   <div class="sheet">
     <div class="hero-frame reveal">
       <span class="corner tl" aria-hidden="true"><svg viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 28 V8 Q2 2 8 2 H28"/><path d="M8 28 V12 Q8 8 12 8 H28" opacity=".55"/></svg></span>
@@ -790,7 +833,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
         <!-- legend around the band -->
         <g class="ringtext" fill="currentColor" font-family="IM Fell English SC, IM Fell English, Georgia, serif" font-size="9.2" letter-spacing="2.1">
           <text text-anchor="middle"><textPath href="#crest-arc-top" startOffset="50%">KEVIN JOSE ✦ TREESA SYRIL</textPath></text>
-          <text text-anchor="middle"><textPath href="#crest-arc-bot" startOffset="50%">ANNO DOMINI · MMXXVII</textPath></text>
+          <text text-anchor="middle"><textPath href="#crest-arc-bot" startOffset="50%">ANNO DOMINI · 2027</textPath></text>
         </g>
         <g class="ringtext" fill="var(--gold)">
           <path d="M45 136.4l3.6 3.6-3.6 3.6-3.6-3.6z"/><path d="M195 136.4l3.6 3.6-3.6 3.6-3.6-3.6z"/>
@@ -819,7 +862,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
 
       <div class="rule-dot"><span>❦</span></div>
 
-      <p class="when">Saturday · the Sixteenth of January · MMXXVII<br>at four o’clock in the afternoon</p>
+      <p class="when">Saturday · the Sixteenth of January · 2027<br>at four o’clock in the afternoon</p>
       <p class="where">St. George Puthenpally Church · Kerala</p>
 
       <p class="families">
@@ -853,7 +896,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
         <div class="tintype">
           <img src="assets/portrait.jpg" alt="Kevin and Treesa smiling at one another beneath green boughs" loading="lazy">
         </div>
-        <figcaption class="plaque">the betrothal portraits · mmxxvi</figcaption>
+        <figcaption class="plaque">the betrothal portraits · 2026</figcaption>
       </figure>
 
       <div class="story-copy reveal">
@@ -902,7 +945,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
       <div class="count-cell"><b id="cd-secs">—</b><span>seconds</span></div>
     </div>
     <p class="count-foot">— until Kevin &amp; Treesa say <em>“I do”</em> —<br>
-      <span>Saturday, the sixteenth of January, MMXXVII · four o’clock in the afternoon</span></p>
+      <span>Saturday, the sixteenth of January, 2027 · four o’clock in the afternoon</span></p>
     <button class="cal-btn" type="button">add to your calendar ↧</button>
   </div>
 </section>
@@ -1022,14 +1065,14 @@ footer .credit em{ font-style:normal; color:var(--rust); }
             <p class="kind">the ceremony · 4 o’clock</p>
             <h3>St. George Puthenpally Church</h3>
             <p class="addr">Puthenpally, Kerala<br><span style="font-size:.9em">(full address to follow)</span></p>
-            <span class="turn-hint">turn the card over ☞</span>
+            <span class="turn-hint">tap to turn the card →</span>
           </div>
           <div class="venue vf-back">
             <svg class="postmark" viewBox="0 0 80 80" fill="none" stroke="currentColor" aria-hidden="true">
               <circle cx="40" cy="40" r="34" stroke-width="1.6" stroke-dasharray="4 5"/>
               <circle cx="40" cy="40" r="26" stroke-width="1"/>
               <text x="40" y="37" font-family="IM Fell English SC, Georgia, serif" font-size="9" letter-spacing="1.5" fill="currentColor" stroke="none" text-anchor="middle">KERALA</text>
-              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·I·27</text>
+              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·01·27</text>
             </svg>
             <p class="kind">how to find us</p>
             <p class="note" style="border:0;margin-top:8px;padding-top:0">The Solemn Nuptial
@@ -1037,6 +1080,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
             by half past three, before the bridal procession. Travel notes
             &amp; parking directions to follow.</p>
             <div><a class="map" href="https://maps.google.com/?q=St+George+Puthenpally+Church" target="_blank" rel="noopener">consult the map →</a></div>
+            <span class="turn-hint">← tap to turn back</span>
           </div>
         </div>
       </div>
@@ -1052,14 +1096,14 @@ footer .credit em{ font-style:normal; color:var(--rust); }
             <p class="kind">the reception · 6 o’clock</p>
             <h3>Trinita Casa Events Centre</h3>
             <p class="addr">Varapuzha, Ernakulam<br>Kerala</p>
-            <span class="turn-hint">turn the card over ☞</span>
+            <span class="turn-hint">tap to turn the card →</span>
           </div>
           <div class="venue vf-back">
             <svg class="postmark" viewBox="0 0 80 80" fill="none" stroke="currentColor" aria-hidden="true">
               <circle cx="40" cy="40" r="34" stroke-width="1.6" stroke-dasharray="4 5"/>
               <circle cx="40" cy="40" r="26" stroke-width="1"/>
               <text x="40" y="37" font-family="IM Fell English SC, Georgia, serif" font-size="9" letter-spacing="1.5" fill="currentColor" stroke="none" text-anchor="middle">VARAPUZHA</text>
-              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·I·27</text>
+              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·01·27</text>
             </svg>
             <p class="kind">how to find us</p>
             <p class="note" style="border:0;margin-top:8px;padding-top:0">The reception banquet
@@ -1067,6 +1111,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
             toasts from both houses, and dinner. A short drive from the
             church; detailed directions to follow.</p>
             <div><a class="map" href="https://maps.google.com/?q=Trinita+Casa+Events+Centre+Varapuzha" target="_blank" rel="noopener">consult the map →</a></div>
+            <span class="turn-hint">← tap to turn back</span>
           </div>
         </div>
       </div>
@@ -1121,6 +1166,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
       <form class="replycard reveal" id="rsvp-form" novalidate>
         <p class="rtitle">· the reply card ·</p>
         <p class="rsub">as one might have posted it, a hundred years ago</p>
+        <div class="hp" aria-hidden="true"><label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
 
         <div class="field">
           <label for="f-name">Name(s) of guest(s)</label>
@@ -1154,6 +1200,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
           <textarea id="f-blessing" name="blessing" placeholder="Write a line for the family book of blessings…"></textarea>
         </div>
 
+        <p class="rsvp-error" id="rsvp-error" role="alert" hidden></p>
         <button type="submit" class="seal-btn">seal &amp; send the reply</button>
       </form>
 
@@ -1194,8 +1241,29 @@ footer .credit em{ font-style:normal; color:var(--rust); }
   <p class="vale reveal"><span class="written">With all our love, until January —</span></p>
   <p style="font-style:italic;color:var(--ink-soft)">Kevin &amp; Treesa</p>
   <p class="credit reveal"><span class="written">designed &amp; developed with the guidance of my evergorgeous angel, <em>Treesa</em></span></p>
-  <small>kerala · anno domini mmxxvii · “what god has joined together”</small>
+  <small>kerala · anno domini 2027 · “what god has joined together”</small>
 </footer>
+
+<div class="dock" role="navigation" aria-label="Sections of the invitation">
+  <a href="#top" data-spy="top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5 12 4l8.5 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>
+    <span>Home</span></a>
+  <a href="#story" data-spy="story">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5c-2-1.4-4.6-1.9-8-1.5v13c3.4-.4 6 .1 8 1.5 2-1.4 4.6-1.9 8-1.5V5c-3.4-.4-6 .1-8 1.5z"/><path d="M12 6.5v13"/></svg>
+    <span>Story</span></a>
+  <a href="#program" data-spy="program">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5.5" width="16" height="14.5" rx="1.5"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/><path d="M8.5 14.2h.01M12 14.2h.01M15.5 14.2h.01" stroke-width="2.3"/></svg>
+    <span>Program</span></a>
+  <a href="#venues" data-spy="venues">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+    <span>Venues</span></a>
+  <a href="#candles" data-spy="candles">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c1.6 1.8 2.3 3 2.3 4.1a2.3 2.3 0 0 1-4.6 0c0-1.1.7-2.3 2.3-4.1z"/><path d="M12 9.6v1.9"/><rect x="9" y="11.5" width="6" height="9" rx=".8"/><path d="M6.5 20.5h11"/></svg>
+    <span>Candle</span></a>
+  <a href="#rsvp" data-spy="rsvp">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1z"/><path d="M14.5 6.5l3 3"/></svg>
+    <span>RSVP</span></a>
+</div>
 
 <svg class="rings" viewBox="0 0 96 34" aria-hidden="true">
   <path class="spark" d="M48 0l1.6 3.4 3.4 1.6-3.4 1.6-1.6 3.4-1.6-3.4-3.4-1.6 3.4-1.6z"/>
@@ -1544,25 +1612,71 @@ function petalBurst(){
 }
 
 /* ———————————————————— the reply card ———————————————————— */
+/* The Google Apps Script web-app URL that files each reply into the RSVP sheet
+   (set-up steps are in apps-script/README.md). */
+var RSVP_ENDPOINT = '';
 (function(){
   var form = document.getElementById('rsvp-form');
   var sealed = document.getElementById('sealed');
   var msg = document.getElementById('sealed-msg');
+  var err = document.getElementById('rsvp-error');
   if (!form) return;
-  form.addEventListener('submit', function(ev){
-    ev.preventDefault();
-    var name = form.name.value.trim();
-    if (!name){ form.name.focus(); form.name.placeholder = 'pray, tell us your name first…'; return; }
-    var accepts = form.attend.value === 'accept';
+  var btn = form.querySelector('.seal-btn'), label = btn.textContent, busy = false;
+
+  function setBusy(on){
+    busy = on; btn.disabled = on; btn.textContent = on ? 'sealing…' : label;
+  }
+  function fail(){
+    setBusy(false);
+    err.textContent = 'The post has gone astray — your reply was not sent. Please try once more, or send word to Kevin & Treesa directly.';
+    err.hidden = false;
+  }
+  function succeed(name, accepts, count){
     var first = name.replace(/^(mr\.?|mrs\.?|ms\.?|dr\.?|rev\.?|fr\.?)\s*&?\s*(mrs\.?)?\s*/i,'').split(/\s+/)[0] || name;
     msg.textContent = accepts
-      ? 'Thank you, ' + first + ' — a place shall be laid for your party of ' + form.count.value +
+      ? 'Thank you, ' + first + ' — a place shall be laid for your party of ' + count +
         ', and your blessing goes into the family book.'
       : 'Thank you for sending word, ' + first + ' — you will be missed, and your blessing is treasured all the same.';
     form.style.display = 'none';
     sealed.classList.add('show');
     sealed.scrollIntoView({ behavior:'smooth', block:'center' });
     if (accepts){ petalBurst(); ktPlay('chime'); }
+  }
+
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if (busy) return;
+    var name = form.name.value.trim();
+    if (!name){ form.name.focus(); form.name.placeholder = 'pray, tell us your name first…'; return; }
+    var accepts = form.attend.value === 'accept';
+    var payload = {
+      name: name,
+      attend: form.attend.value,
+      count: accepts ? form.count.value : '0',
+      diet: form.diet.value.trim(),
+      blessing: form.blessing.value.trim(),
+      website: form.website.value
+    };
+    err.hidden = true;
+    if (!RSVP_ENDPOINT){ fail(); return; }
+    setBusy(true);
+    var ctl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function(){ if (ctl) ctl.abort(); }, 20000);
+    /* text/plain keeps this a "simple" request, which Apps Script accepts without a CORS preflight */
+    fetch(RSVP_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      signal: ctl ? ctl.signal : undefined
+    })
+    .then(function(r){ if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function(d){
+      clearTimeout(timer);
+      if (!d || !d.ok) throw new Error('rejected');
+      setBusy(false);
+      succeed(name, accepts, payload.count);
+    })
+    .catch(function(){ clearTimeout(timer); fail(); });
   });
 })();
 
@@ -1570,6 +1684,29 @@ function petalBurst(){
 (function(){
   var mono = document.querySelector('nav button.mono');
   if (mono) mono.addEventListener('click', function(){ petalBurst(); ktPlay('peal'); });
+})();
+
+/* ———————————————————— the dock follows where you are ———————————————————— */
+(function(){
+  var dock = document.querySelector('.dock'); if(!dock) return;
+  var links = Array.prototype.slice.call(dock.querySelectorAll('a'));
+  var marks = [['top','top'],['story','story'],['program','countdown'],['venues','venues'],['candles','candles'],['rsvp','rsvp']]
+    .map(function(m){ return [m[0], document.getElementById(m[1])]; });
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var line = innerHeight * .42, current = 'top';
+    marks.forEach(function(m){ if (m[1] && m[1].getBoundingClientRect().top <= line) current = m[0]; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) current = 'rsvp';
+    links.forEach(function(a){
+      var on = a.getAttribute('data-spy') === current;
+      a.classList.toggle('on', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+  addEventListener('resize', update);
+  update();
 })();
 
 /* ———————————————————— two rings find each other ———————————————————— */
@@ -1583,6 +1720,7 @@ function petalBurst(){
     l.setAttribute('cx', (12 + p * 28).toFixed(2));
     r.setAttribute('cx', (84 - p * 28).toFixed(2));
     svg.classList.toggle('joined', p > .985);
+    svg.classList.toggle('near', p > .8);
   }
   addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
   addEventListener('resize', update);
