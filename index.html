@@ -162,7 +162,12 @@ nav .mono{ font-family:var(--fell); font-size:1rem; letter-spacing:.14em; color:
 @media (max-width:540px){
   .hero .benediction{ font-size:.58rem; letter-spacing:.28em; text-indent:.28em; }
 }
-.crest{ width:clamp(130px,19vw,172px); margin:26px auto 10px; color:var(--rust); display:block; }
+.crest{ width:clamp(176px,27vw,240px); margin:24px auto 4px; color:var(--rust); display:block; overflow:visible; }
+body.enter .crest .leaf{ animation:leafIn .7s cubic-bezier(.2,1.3,.4,1) backwards; animation-delay:calc(.75s + var(--n)*75ms); }
+@keyframes leafIn{ from{ opacity:0; transform:scale(.1) } }
+body.enter .crest .ringtext{ animation:softFade 1.5s ease 1.5s backwards; }
+body.enter .crest .mono-l{ animation:softFade 1.6s ease .9s backwards; }
+@keyframes softFade{ from{ opacity:0 } }
 .hero .announce{ font-family:var(--fell); font-style:italic; font-size:1.12rem; color:var(--ink-soft); margin-top:14px; }
 .hero h1{ font-family:var(--fell); font-weight:400; line-height:1.02; margin:10px 0 0;
   font-size:clamp(2.7rem, 8.2vw, 5.4rem); letter-spacing:.01em; }
@@ -238,7 +243,7 @@ nav .mono{ font-family:var(--fell); font-size:1rem; letter-spacing:.14em; color:
 .act{ position:relative; display:grid; grid-template-columns:1fr 1fr; gap:clamp(26px,6vw,60px);
   padding:34px 0; align-items:center; }
 .act .numeral{ text-align:right; }
-.act:nth-child(even) .numeral{ order:2; text-align:left; }
+.act:nth-of-type(even) .numeral{ order:2; text-align:left; }
 .act .numeral b{ font-family:var(--fell); font-weight:400; font-size:clamp(2.6rem,6vw,3.6rem);
   color:var(--rust); line-height:1; display:block; }
 .act .numeral span{ font-family:var(--fellsc); font-size:.72rem; letter-spacing:.32em; color:var(--ink-faint); }
@@ -249,8 +254,8 @@ nav .mono{ font-family:var(--fell); font-size:1rem; letter-spacing:.14em; color:
   color:var(--gold); background:var(--paper); padding:6px 2px; font-size:.8rem; }
 @media (max-width:640px){
   .playbill::before{ left:12px; }
-  .act, .act:nth-child(even){ grid-template-columns:1fr; gap:6px; padding-left:44px; }
-  .act .numeral, .act:nth-child(even) .numeral{ text-align:left; order:0 }
+  .act, .act:nth-of-type(even){ grid-template-columns:1fr; gap:6px; padding-left:44px; }
+  .act .numeral, .act:nth-of-type(even) .numeral{ text-align:left; order:0 }
   .act::after{ left:12px; }
 }
 
@@ -301,18 +306,6 @@ nav .mono{ font-family:var(--fell); font-size:1rem; letter-spacing:.14em; color:
   letter-spacing:.3em; text-indent:.3em; color:var(--rust); text-decoration:none;
   border:1px solid rgba(125,47,34,.55); padding:10px 22px; transition:all .3s; }
 .venue a.map:hover{ background:var(--rust); color:var(--paper); }
-
-/* ————————————————————————————————————————————————
-   ATTIRE
-———————————————————————————————————————————————— */
-.attire-box{ max-width:680px; margin:clamp(40px,6vh,60px) auto 0; text-align:center; }
-.attire-box p{ color:var(--ink-soft); }
-.swatches{ display:flex; justify-content:center; gap:clamp(14px,3vw,26px); margin:34px 0 10px; flex-wrap:wrap; }
-.swatch{ display:grid; justify-items:center; gap:10px; font-family:var(--fellsc);
-  font-size:.64rem; letter-spacing:.22em; color:var(--ink-faint); }
-.swatch i{ width:52px; height:52px; border-radius:50%; border:1px solid rgba(91,73,51,.5);
-  box-shadow: inset 0 0 0 3px var(--paper), 0 10px 18px -10px rgba(56,36,16,.5); }
-.attire-note{ margin-top:22px; font-style:italic; font-size:1rem; color:var(--rust); }
 
 /* ————————————————————————————————————————————————
    CAMEO + RSVP
@@ -371,6 +364,269 @@ nav .mono{ font-family:var(--fell); font-size:1rem; letter-spacing:.14em; color:
 .sealed p{ font-style:italic; color:var(--ink-soft); margin-top:8px; }
 
 /* ————————————————————————————————————————————————
+   THE SEALED LETTER — opening experience
+———————————————————————————————————————————————— */
+.letter-overlay{ position:fixed; inset:0; z-index:100; display:none; place-items:center;
+  background:
+    radial-gradient(120% 95% at 50% 8%, rgba(255,246,220,.35), rgba(255,246,220,0) 55%),
+    radial-gradient(130% 110% at 50% 110%, rgba(45,28,10,.5), rgba(45,28,10,0) 60%),
+    var(--paper-warm);
+  transition:opacity 1.1s ease, visibility 1.1s; }
+html.js-letter .letter-overlay{ display:grid; }
+body.letter-done .letter-overlay{ opacity:0; visibility:hidden; pointer-events:none; }
+body.letter-wait{ overflow:hidden; }
+.letter-scene{ text-align:center; padding:24px; }
+.envelope{ position:relative; width:min(86vw,440px); aspect-ratio:10/6.6; margin:0 auto;
+  perspective:1300px; filter:drop-shadow(0 34px 44px rgba(40,24,8,.42)); }
+.env-back,.env-front,.env-flap,.env-letter{ position:absolute; }
+.env-back{ inset:0; background:#dcccA3; background:#dccca3; border:1px solid rgba(91,73,51,.7); }
+.env-letter{ left:7%; right:7%; top:5%; height:90%;
+  background:var(--paper); border:1px solid rgba(91,73,51,.55);
+  display:grid; place-items:center; text-align:center;
+  transition:transform 1.1s cubic-bezier(.19,1,.22,1) .5s;
+  font-family:var(--fell); color:var(--rust); font-size:1.7rem; letter-spacing:.18em; }
+.env-letter small{ display:block; margin-top:8px; font-family:var(--fellsc); font-size:.52rem;
+  letter-spacing:.28em; color:var(--ink-faint); }
+.envelope.open .env-letter{ transform:translateY(-56%); }
+.env-front{ inset:0; border:1px solid rgba(91,73,51,.7);
+  background:linear-gradient(145deg, #e6d6b2 0%, #d9c69a 100%);
+  clip-path:polygon(0 0, 50% 46%, 100% 0, 100% 100%, 0 100%); }
+.env-flap{ inset:0 0 auto 0; height:54%; transform-origin:top center; z-index:4;
+  background:linear-gradient(180deg,#e2d1ab,#d2bd8e);
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  border-top:1px solid rgba(91,73,51,.7);
+  backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  transition:transform 1s cubic-bezier(.55,.05,.35,1) .08s; }
+.envelope.open .env-flap{ transform:rotateX(-180deg); }
+.seal-wax{ position:absolute; left:50%; top:51%; transform:translate(-50%,-50%);
+  width:94px; height:94px; border:0; padding:0; background:transparent; cursor:pointer; z-index:6;
+  filter:drop-shadow(0 6px 10px rgba(40,20,8,.5));
+  transition:transform .55s ease, opacity .5s ease .1s; }
+.seal-wax svg{ width:100%; height:100%; display:block; }
+.seal-wax:hover,.seal-wax:focus-visible{ transform:translate(-50%,-50%) scale(1.07); }
+.envelope.open .seal-wax{ transform:translate(-50%,60%) rotate(40deg) scale(.85); opacity:0; pointer-events:none; }
+.letter-hint{ margin-top:36px; font-family:var(--fellsc); font-size:.74rem;
+  letter-spacing:.4em; text-indent:.4em; color:var(--ink-soft);
+  animation:hintPulse 2.8s ease-in-out infinite; }
+@keyframes hintPulse{ 0%,100%{ opacity:.55 } 50%{ opacity:1 } }
+.letter-skip{ margin-top:18px; background:none; border:0; cursor:pointer;
+  font-family:var(--fellsc); font-size:.62rem; letter-spacing:.3em; color:var(--ink-faint);
+  border-bottom:1px solid rgba(91,73,51,.4); padding:0 0 3px; }
+.letter-skip:hover{ color:var(--rust); }
+
+/* ————— hero entrance choreography ————— */
+html.js-letter .hero-frame :is(.benediction,.announce,.when,.where,.families,.scroll-hint,.rule-dot){ opacity:0; }
+html.js-letter .hero h1 .L{ opacity:0; }
+html.js-letter .crest{ opacity:0; }
+body.enter .crest{ opacity:1; transition:opacity 1.2s ease .15s; }
+body.enter .crest .draw{ stroke-dasharray:620; stroke-dashoffset:620; animation:crestDraw 2.6s ease .25s forwards; }
+@keyframes crestDraw{ to{ stroke-dashoffset:0 } }
+.hero h1 .line{ display:inline-block; white-space:nowrap; }
+.hero h1 .L{ display:inline-block; }
+.hero h1 .amp.L{ display:block; }
+body.enter .hero h1 .L{ animation:inkRise .75s cubic-bezier(.19,1,.22,1) both;
+  animation-delay:calc(.95s + var(--i)*42ms); }
+@keyframes inkRise{ from{ opacity:0; transform:translateY(.38em); filter:blur(5px) }
+  to{ opacity:1; transform:none; filter:none } }
+body.enter .hero-frame .benediction{ animation:softIn 1s .45s both; }
+body.enter .hero-frame .announce{ animation:softIn 1s .8s both; }
+body.enter .hero-frame .rule-dot{ animation:softIn 1s 2.3s both; }
+body.enter .hero-frame .when{ animation:softIn 1s 2.5s both; }
+body.enter .hero-frame .where{ animation:softIn 1s 2.7s both; }
+body.enter .hero-frame .families{ animation:softIn 1.1s 2.95s both; }
+body.enter .hero-frame .scroll-hint{ animation:softIn 1.2s 3.4s both; }
+@keyframes softIn{ from{ opacity:0; transform:translateY(14px) } to{ opacity:1; transform:none } }
+.hero-frame p, .hero-frame h1, .hero-frame .crest{ position:relative; z-index:1; }
+.dust{ position:absolute; inset:0; z-index:0; pointer-events:none; }
+
+/* ————— countdown ————— */
+.countdown{ padding:clamp(60px,9vh,100px) 0; text-align:center; position:relative; }
+.countdown::before,.countdown::after{ content:""; position:absolute; left:50%;
+  transform:translateX(-50%); width:min(680px,84vw); height:4px;
+  border-top:1px solid rgba(91,73,51,.6); border-bottom:1px solid rgba(91,73,51,.3); }
+.countdown::before{ top:22px } .countdown::after{ bottom:22px }
+.count-grid{ display:flex; justify-content:center; align-items:flex-start;
+  gap:clamp(18px,5vw,56px); margin-top:34px; flex-wrap:wrap; }
+.count-cell b{ display:block; font-family:var(--fell); font-weight:400; line-height:1;
+  font-size:clamp(2.7rem,7.5vw,4.8rem); color:var(--rust); font-variant-numeric:tabular-nums; }
+.count-cell b.tick{ animation:numTick .5s ease; }
+@keyframes numTick{ from{ opacity:.1; transform:translateY(-10px) } to{ opacity:1; transform:none } }
+.count-cell span{ display:block; margin-top:10px; font-family:var(--fellsc); font-size:.66rem;
+  letter-spacing:.34em; text-indent:.34em; color:var(--ink-faint); }
+.count-foot{ margin-top:30px; font-style:italic; color:var(--ink-soft); line-height:1.8; }
+.count-foot span{ font-size:.92rem; color:var(--ink-faint); }
+.count-married{ font-family:var(--script); font-size:2.2rem; color:var(--rust); margin-top:30px; }
+.cal-btn{ display:inline-block; margin-top:22px; background:none; cursor:pointer;
+  font-family:var(--fellsc); font-size:.72rem; letter-spacing:.3em; text-indent:.3em;
+  color:var(--rust); border:1px solid rgba(125,47,34,.55); padding:11px 24px;
+  transition:background .3s, color .3s; }
+.cal-btn:hover{ background:var(--rust); color:var(--paper); }
+
+/* ————— timeline ink-draw & stamps ————— */
+.playbill .rail{ position:absolute; left:50%; top:8px; bottom:8px; width:2px; margin-left:-1px;
+  background:linear-gradient(180deg, var(--gold), var(--rust));
+  transform-origin:top; transform:scaleY(0); }
+@media (max-width:640px){ .playbill .rail{ left:12px } }
+.act::after{ transition:transform .7s cubic-bezier(.19,1,.22,1) .25s; }
+.act.reveal:not(.in)::after{ transform:translate(-50%,-50%) scale(0); }
+.act.in .stamp{ animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) .5s both; }
+@keyframes stampIn{ from{ opacity:0; transform:rotate(-16deg) scale(2.1) }
+  to{ opacity:.85; transform:rotate(-4deg) scale(1) } }
+
+/* ————— photographs waking into colour ————— */
+.tintype img{ transition:filter 2.6s ease; }
+.tintype.awake img, .tintype:hover img{ filter:sepia(.05) saturate(1.02) contrast(1.02) brightness(1); }
+
+/* ————— venue postcards that turn over ————— */
+.venue-flip{ perspective:1600px; cursor:pointer; position:relative; }
+.vf-inner{ position:relative; height:100%; transform-style:preserve-3d;
+  transition:transform 1s cubic-bezier(.19,1,.22,1); }
+.venue-flip.flipped .vf-inner{ transform:rotateY(-180deg); }
+.vf-front,.vf-back{ backface-visibility:hidden; -webkit-backface-visibility:hidden; height:100%; }
+.vf-back{ position:absolute; inset:0; transform:rotateY(-180deg);
+  display:flex; flex-direction:column; justify-content:center; }
+.turn-hint{ display:block; margin-top:18px; font-family:var(--script);
+  font-size:1.3rem; color:var(--gold); }
+.postmark{ position:absolute; top:16px; right:14px; width:72px; height:72px;
+  color:var(--rust); opacity:.5; transform:rotate(9deg); pointer-events:none; }
+
+/* ————— marginalia ————— */
+.margin-note{ font-family:var(--script); font-size:clamp(1.2rem,2.4vw,1.5rem); color:var(--rust);
+  display:inline-block; transform:rotate(var(--mr,-3deg));
+  opacity:0; transition:opacity 1.4s ease .7s; }
+.in .margin-note{ opacity:.9; }
+.story-copy .margin-note{ display:block; text-align:right; margin-top:16px; }
+.act .margin-note{ margin-top:12px; }
+
+/* ————— garden quote entrance & sparkle ————— */
+.band .q,.band .c{ opacity:0; transform:translateY(22px);
+  transition:opacity 1.2s ease .3s, transform 1.2s ease .3s; }
+.band.in .q,.band.in .c{ opacity:1; transform:none; }
+.fleuron svg{ animation:spark 7s ease-in-out infinite; }
+@keyframes spark{ 0%,100%{ transform:scale(1); opacity:.85 } 50%{ transform:scale(1.14); opacity:1 } }
+
+/* ————— ink-wipe headings ————— */
+h2.display .ink{ display:inline-block; clip-path:inset(-12% 100% -12% 0);
+  transition:clip-path 1.4s cubic-bezier(.4,0,.2,1) .15s; }
+h2.display.in .ink{ clip-path:inset(-12% -6% -12% 0); }
+
+/* ————————————————————————————————————————————————
+   SECOND PASS — the inventive layer
+———————————————————————————————————————————————— */
+.dust{ width:100%; height:100%; }
+
+/* a grander, addressed envelope */
+.letter-kicker{ font-family:var(--fellsc); font-size:.7rem; letter-spacing:.46em; text-indent:.46em;
+  color:var(--rust); margin-bottom:36px; }
+.envelope{ width:min(88vw,520px); animation:envFloat 5.5s ease-in-out infinite; }
+.envelope.open{ animation-play-state:paused; }
+@keyframes envFloat{ 0%,100%{ transform:translateY(0) rotate(-.6deg) } 50%{ transform:translateY(-9px) rotate(.4deg) } }
+.env-addr{ position:absolute; left:8%; right:8%; bottom:10%; z-index:3; text-align:center;
+  font-family:var(--script); font-size:clamp(1.5rem,5.2vw,2.2rem); line-height:1.2; color:var(--ink-soft);
+  pointer-events:none; transition:opacity .35s ease; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.envelope.open .env-addr{ opacity:0; }
+.seal-wax{ width:104px; height:104px; }
+
+/* sunlight drifting across the invitation */
+.hero-frame::after{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:linear-gradient(112deg, rgba(255,244,212,0) 34%, rgba(255,244,212,.55) 47%,
+             rgba(255,236,190,.2) 54%, rgba(255,244,212,0) 66%);
+  background-size:260% 100%; background-position:130% 0; mix-blend-mode:soft-light;
+  animation:sunbeam 16s ease-in-out infinite; }
+@keyframes sunbeam{ 0%{ background-position:130% 0 } 55%,100%{ background-position:-40% 0 } }
+
+/* the monogram hides a surprise */
+nav button.mono{ background:none; cursor:pointer; padding:0;
+  transition:transform .45s cubic-bezier(.19,1,.22,1), background .3s, color .3s; }
+nav button.mono:hover{ background:var(--rust); color:var(--paper); transform:rotate(-8deg) scale(1.06); }
+
+/* two rings that find each other as you read */
+.rings{ position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:47;
+  width:96px; height:34px; pointer-events:none; opacity:0; transition:opacity .8s ease, filter .8s ease;
+  background:radial-gradient(closest-side, rgba(233,220,192,.92), rgba(233,220,192,0)); overflow:visible; }
+body.enter .rings{ opacity:.92; }
+.rings circle{ fill:none; stroke:var(--gold); stroke-width:2; transition:stroke .8s ease; }
+.rings .spark{ fill:var(--rust); opacity:0; transform-box:fill-box; transform-origin:center;
+  transform:scale(.2) rotate(-40deg); transition:opacity .6s ease, transform .7s cubic-bezier(.2,1.5,.4,1); }
+.rings.joined circle{ stroke:var(--rust); }
+.rings.joined .spark{ opacity:1; transform:scale(1) rotate(0); }
+.rings.joined{ filter:drop-shadow(0 0 7px rgba(184,154,94,.95)); }
+@media (max-width:700px){ .rings{ bottom:12px; transform:translateX(-50%) scale(.82); } }
+
+/* the next celebration, counted down on the timeline itself */
+.next-badge{ display:inline-flex; align-items:center; gap:9px; margin-bottom:10px;
+  font-family:var(--fellsc); font-size:.62rem; letter-spacing:.26em; color:var(--paper);
+  background:var(--rust); padding:5px 13px 4px; }
+.next-badge::before{ content:""; width:6px; height:6px; border-radius:50%; background:#f3d9a0;
+  animation:pulseDot 1.6s ease-in-out infinite; }
+@keyframes pulseDot{ 0%,100%{ transform:scale(1); opacity:1 } 50%{ transform:scale(1.8); opacity:.35 } }
+.act.next .numeral b{ text-shadow:0 0 24px rgba(184,154,94,.75); }
+
+/* the portrait, held in the hand */
+.arch{ will-change:transform; }
+.arch .glare{ position:absolute; inset:12px; pointer-events:none; opacity:0; transition:opacity .5s ease;
+  border-radius: 999px 999px 4px 4px / 540px 540px 4px 4px; mix-blend-mode:soft-light;
+  background:radial-gradient(circle at var(--gx,50%) var(--gy,30%), rgba(255,248,225,.5), rgba(255,248,225,0) 55%); }
+.arch:hover .glare{ opacity:1; }
+
+/* light a candle */
+.niche{ position:relative; width:min(100%,620px); margin:clamp(40px,6vh,60px) auto 0; padding:96px 20px 0;
+  border-radius:310px 310px 10px 10px / 230px 230px 10px 10px; overflow:hidden;
+  background:radial-gradient(ellipse 90% 70% at 50% 100%, #573a1d 0%, #33200f 55%, #1f1309 100%);
+  border:1px solid rgba(91,73,51,.9);
+  box-shadow: inset 0 0 0 6px #2a1a0c, inset 0 0 0 7px rgba(184,154,94,.55),
+              inset 0 40px 80px rgba(0,0,0,.45), 0 30px 60px -28px rgba(56,36,16,.6); }
+.niche .cross{ position:absolute; top:36px; left:50%; transform:translateX(-50%);
+  width:22px; height:34px; color:rgba(184,154,94,.6); }
+.votives{ display:flex; justify-content:center; align-items:flex-end;
+  gap:clamp(10px,3.4vw,30px); min-height:176px; }
+.candle{ position:relative; border:0; background:none; padding:0; cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  -webkit-tap-highlight-color:transparent; }
+.candle .flame{ width:13px; height:27px; margin-bottom:-2px; position:relative; z-index:1;
+  border-radius:50% 50% 50% 50% / 62% 62% 38% 38%;
+  background:radial-gradient(ellipse at 50% 78%, #fffbe6 0%, #ffe08a 30%, #f59a36 62%, rgba(240,130,40,0) 100%);
+  transform-origin:50% 100%; transform:scale(0); opacity:0;
+  transition:transform .5s cubic-bezier(.2,1.6,.4,1), opacity .4s ease; }
+.candle.lit .flame{ transform:scale(1); opacity:1;
+  animation:flicker 1.9s ease-in-out infinite alternate; animation-delay:var(--fd,0s); }
+@keyframes flicker{ 0%{ transform:scale(1) rotate(-2deg) } 30%{ transform:scale(1.07,.93) rotate(2deg) }
+  60%{ transform:scale(.94,1.09) rotate(-1deg) } 100%{ transform:scale(1.03,.98) rotate(1.5deg) } }
+.candle .wick{ width:2px; height:7px; background:#1c1108; }
+.candle .wax{ width:clamp(20px,5.2vw,30px); height:var(--h,90px); border-radius:5px 5px 0 0;
+  background:linear-gradient(90deg,#c5b693 0%,#f6efdc 38%,#efe5cc 60%,#ac9c78 100%);
+  box-shadow:inset 0 7px 7px -4px rgba(255,255,255,.65); transition:filter .8s ease; filter:brightness(.62); }
+.candle.lit .wax{ filter:brightness(1); }
+.candle::before{ content:""; position:absolute; left:50%; top:0; width:170px; height:170px;
+  transform:translate(-50%,-42%) scale(.4); border-radius:50%; pointer-events:none; opacity:0;
+  background:radial-gradient(closest-side, rgba(255,196,96,.45), rgba(255,170,70,.13) 55%, rgba(255,170,70,0));
+  transition:opacity .8s ease, transform .8s ease; }
+.candle.lit::before{ opacity:1; transform:translate(-50%,-42%) scale(1); }
+.candle:not(.lit):hover .wax{ filter:brightness(.8); }
+.candle:focus-visible .wax{ outline:2px solid var(--gold-soft); outline-offset:3px; }
+.ledge{ height:16px; margin:0 -20px; border-top:1px solid rgba(255,230,170,.5);
+  background:linear-gradient(180deg,#8a6a35,#5d4520 60%,#3b2b14); }
+.candle-count{ margin-top:26px; text-align:center; font-style:italic; color:var(--ink-soft); min-height:1.7em; }
+.candle-count b{ font-family:var(--fell); font-weight:400; font-style:normal; color:var(--rust); }
+
+/* handwriting that writes itself */
+.written{ display:inline-block; clip-path:inset(-25% 100% -25% 0);
+  transition:clip-path 2.4s cubic-bezier(.4,0,.2,1) .3s; }
+.in .written{ clip-path:inset(-25% -5% -25% 0); }
+
+@media (prefers-reduced-motion:reduce){
+  .written{ clip-path:none; transition:none }
+  .hero-frame::after, .next-badge::before, .candle.lit .flame{ animation:none }
+  h2.display .ink{ clip-path:none; transition:none }
+  .fleuron svg{ animation:none }
+  .vf-inner{ transition:none }
+  .count-cell b.tick{ animation:none }
+  body.enter *{ animation-duration:.01s !important; animation-delay:0s !important }
+  html.js-letter .hero-frame :is(.benediction,.announce,.when,.where,.families,.scroll-hint,.rule-dot),
+  html.js-letter .hero h1 .L, html.js-letter .crest{ opacity:1 }
+}
+
+/* ————————————————————————————————————————————————
    FOOTER
 ———————————————————————————————————————————————— */
 footer{ text-align:center; padding:60px 20px 70px; position:relative; z-index:2; }
@@ -378,9 +634,48 @@ footer .mono{ font-family:var(--fell); font-size:1.3rem; letter-spacing:.2em; co
 footer .vale{ font-family:var(--script); font-size:1.9rem; color:var(--ink-soft); margin:12px 0 6px; }
 footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter-spacing:.3em;
   text-indent:.3em; color:var(--ink-faint); margin-top:14px; }
+footer .credit{ margin-top:22px; font-family:var(--script); font-size:1.25rem;
+  color:var(--gold); }
+footer .credit em{ font-style:normal; color:var(--rust); }
 </style>
+<script>try{if(!sessionStorage.getItem('kt-letter')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-letter')}catch(e){}</script>
 </head>
 <body>
+
+<!-- ═══════════════ THE SEALED LETTER ═══════════════ -->
+<div id="letter" class="letter-overlay" role="dialog" aria-label="A sealed invitation">
+  <div class="letter-scene">
+    <p class="letter-kicker">a letter has arrived</p>
+    <div class="envelope">
+      <div class="env-back"></div>
+      <div class="env-letter"><div>K &amp; T<small>holy matrimony · mmxxvii</small></div></div>
+      <div class="env-front"></div>
+      <div class="env-addr" id="env-addr">for you, with love</div>
+      <div class="env-flap"></div>
+      <button class="seal-wax" id="break-seal" aria-label="Break the wax seal and open the invitation">
+        <svg viewBox="0 0 120 120">
+          <defs>
+            <radialGradient id="wax-a" cx="40%" cy="34%" r="75%">
+              <stop offset="0" stop-color="#96392a"/><stop offset=".55" stop-color="#6f2116"/><stop offset="1" stop-color="#55160e"/>
+            </radialGradient>
+            <linearGradient id="press-a" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#541510"/><stop offset="1" stop-color="#78271b"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#wax-a)" d="M109.25 60.00 L109.27 62.58 L109.07 65.16 L108.56 67.69 L107.78 70.16 L106.85 72.55 L105.91 74.92 L105.00 77.27 L104.07 79.62 L102.97 81.89 L101.55 83.99 L99.76 85.82 L97.67 87.37 L95.51 88.75 L93.50 90.16 L91.78 91.78 L90.36 93.72 L89.09 95.92 L87.73 98.17 L86.09 100.17 L84.08 101.70 L81.74 102.66 L79.20 103.13 L76.62 103.30 L74.10 103.39 L71.66 103.52 L69.29 103.71 L66.95 103.86 L64.61 103.91 L62.30 103.84 L60.00 103.74 L57.71 103.78 L55.37 104.06 L52.94 104.58 L50.40 105.15 L47.80 105.53 L45.22 105.49 L42.76 104.90 L40.47 103.87 L38.29 102.61 L36.10 101.40 L33.76 100.41 L31.21 99.63 L28.49 98.91 L25.78 98.00 L23.32 96.68 L21.30 94.85 L19.78 92.57 L18.73 89.99 L18.00 87.28 L17.45 84.57 L17.01 81.90 L16.72 79.27 L16.62 76.65 L16.74 74.06 L17.00 71.52 L17.22 69.09 L17.20 66.78 L16.81 64.54 L16.09 62.30 L15.25 60.00 L14.59 57.62 L14.39 55.21 L14.76 52.83 L15.59 50.56 L16.64 48.38 L17.59 46.22 L18.27 43.98 L18.64 41.59 L18.89 39.05 L19.25 36.47 L19.94 33.98 L21.05 31.70 L22.55 29.68 L24.30 27.86 L26.16 26.16 L28.06 24.53 L30.01 22.97 L32.06 21.55 L34.25 20.35 L36.56 19.40 L38.89 18.58 L41.17 17.70 L43.33 16.57 L45.40 15.08 L47.49 13.30 L49.69 11.52 L52.09 10.06 L54.66 9.24 L57.34 9.16 L60.00 9.74 L62.58 10.71 L65.07 11.77 L67.49 12.69 L69.89 13.45 L72.28 14.16 L74.62 15.00 L76.84 16.12 L78.90 17.55 L80.79 19.19 L82.58 20.90 L84.32 22.56 L86.04 24.16 L87.72 25.76 L89.28 27.48 L90.64 29.36 L91.81 31.36 L92.93 33.33 L94.21 35.15 L95.85 36.72 L97.95 38.09 L100.44 39.40 L103.04 40.84 L105.40 42.57 L107.22 44.66 L108.37 47.04 L108.92 49.60 L109.08 52.23 L109.11 54.84 L109.16 57.42Z"/>
+          <circle cx="60" cy="60" r="35" fill="url(#press-a)"/>
+          <circle cx="60" cy="60" r="35" fill="none" stroke="rgba(30,8,4,.45)" stroke-width="1.4"/>
+          <path d="M35.3 84.7 A35 35 0 0 0 84.7 35.3" fill="none" stroke="rgba(255,214,180,.28)" stroke-width="1.1"/>
+          <circle cx="60" cy="60" r="30.5" fill="none" stroke="rgba(236,217,176,.4)" stroke-width=".7"/>
+          <text x="60" y="69.6" font-family="IM Fell English, Georgia, serif" font-size="27" fill="#ecd9b0" text-anchor="middle">K·T</text>
+          <ellipse cx="43" cy="33" rx="15" ry="7.5" transform="rotate(-36 43 33)" fill="#fff" opacity=".11"/>
+        </svg>
+      </button>
+    </div>
+    <p class="letter-hint">break the seal to open</p>
+    <button class="letter-skip" id="skip-letter">enter quietly →</button>
+  </div>
+</div>
 
 <div class="plate" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
@@ -388,7 +683,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
 <nav aria-label="Site">
   <a href="#story">Our Story</a>
   <a href="#program">The Program</a>
-  <span class="mono" aria-hidden="true">K·T</span>
+  <button class="mono" type="button" aria-label="Ring the wedding bells">K·T</button>
   <a href="#venues">The Venues</a>
   <a href="#rsvp">R.S.V.P.</a>
 </nav>
@@ -405,40 +700,121 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
       <p class="benediction">† laudetur jesus christus †</p>
 
       <!-- THE CREST -->
-      <svg class="crest" viewBox="0 0 200 236" fill="none" aria-hidden="true">
-        <path d="M100 4 v16 M92 11 h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-        <ellipse cx="100" cy="122" rx="64" ry="82" stroke="currentColor" stroke-width="1.6"/>
-        <ellipse cx="100" cy="122" rx="57" ry="75" stroke="currentColor" stroke-width=".8" opacity=".65"/>
-        <!-- laurel, left -->
-        <g stroke="currentColor" stroke-width="1.3" opacity=".9">
-          <path d="M34 180 Q18 140 34 96" fill="none"/>
-          <path d="M33 170 q-12 -4 -16 -14 q12 0 16 14z M28 150 q-12 -6 -14 -17 q12 2 14 17z M26 129 q-11 -8 -11 -19 q11 4 11 19z M28 108 q-9 -10 -7 -21 q10 6 7 21z"
-                fill="currentColor" stroke="none" opacity=".85"/>
-          <path d="M33 170 q10 -8 10 -18 q-12 3 -10 18z M28 150 q9 -9 8 -20 q-11 5 -8 20z M26 129 q8 -11 5 -21 q-10 6 -5 21z"
-                fill="currentColor" stroke="none" opacity=".6"/>
-        </g>
-        <!-- laurel, right (mirror) -->
-        <g stroke="currentColor" stroke-width="1.3" opacity=".9" transform="translate(200,0) scale(-1,1)">
-          <path d="M34 180 Q18 140 34 96" fill="none"/>
-          <path d="M33 170 q-12 -4 -16 -14 q12 0 16 14z M28 150 q-12 -6 -14 -17 q12 2 14 17z M26 129 q-11 -8 -11 -19 q11 4 11 19z M28 108 q-9 -10 -7 -21 q10 6 7 21z"
-                fill="currentColor" stroke="none" opacity=".85"/>
-          <path d="M33 170 q10 -8 10 -18 q-12 3 -10 18z M28 150 q9 -9 8 -20 q-11 5 -8 20z M26 129 q8 -11 5 -21 q-10 6 -5 21z"
-                fill="currentColor" stroke="none" opacity=".6"/>
-        </g>
-        <text x="72" y="118" font-family="IM Fell English, Georgia, serif" font-size="52" fill="currentColor" text-anchor="middle">K</text>
-        <text x="100" y="138" font-family="Pinyon Script, cursive" font-size="40" fill="currentColor" text-anchor="middle">&amp;</text>
-        <text x="129" y="168" font-family="IM Fell English, Georgia, serif" font-size="52" fill="currentColor" text-anchor="middle">T</text>
-        <path d="M58 216 Q100 230 142 216" stroke="currentColor" stroke-width="1.2" fill="none"/>
-        <text x="100" y="233" font-family="IM Fell English SC, Georgia, serif" font-size="11" letter-spacing="3" fill="currentColor" text-anchor="middle">A·D· MMXXVII</text>
-      </svg>
+      <svg class="crest" viewBox="0 0 240 262" fill="none" aria-hidden="true">
+        <defs>
+          <path id="crest-arc-top" d="M48.5 140 A71.5 71.5 0 0 1 191.5 140"/>
+          <path id="crest-arc-bot" d="M41.6 140 A78.4 78.4 0 0 0 198.4 140"/>
+        </defs>
 
+        <!-- laurel wreath -->
+        <g>
+          <path class="draw" d="M132.07 238.26 A99 99 0 0 1 74.13 52.27" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <g transform="translate(106.22 238.04) rotate(154.0) scale(1.000)"><path class="leaf" style="--n:0" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(106.22 238.04) rotate(222.0) scale(1.000)"><path class="leaf" style="--n:0" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(87.44 233.49) rotate(165.2) scale(0.973)"><path class="leaf" style="--n:1" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(87.44 233.49) rotate(233.2) scale(0.973)"><path class="leaf" style="--n:1" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(69.90 225.39) rotate(176.4) scale(0.946)"><path class="leaf" style="--n:2" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(69.90 225.39) rotate(244.4) scale(0.946)"><path class="leaf" style="--n:2" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(54.27 214.03) rotate(187.6) scale(0.919)"><path class="leaf" style="--n:3" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(54.27 214.03) rotate(255.6) scale(0.919)"><path class="leaf" style="--n:3" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(41.14 199.86) rotate(198.8) scale(0.892)"><path class="leaf" style="--n:4" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(41.14 199.86) rotate(266.8) scale(0.892)"><path class="leaf" style="--n:4" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(31.02 183.40) rotate(210.0) scale(0.865)"><path class="leaf" style="--n:5" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(31.02 183.40) rotate(278.0) scale(0.865)"><path class="leaf" style="--n:5" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(24.28 165.29) rotate(221.2) scale(0.838)"><path class="leaf" style="--n:6" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(24.28 165.29) rotate(289.2) scale(0.838)"><path class="leaf" style="--n:6" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(21.20 146.22) rotate(232.4) scale(0.811)"><path class="leaf" style="--n:7" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(21.20 146.22) rotate(300.4) scale(0.811)"><path class="leaf" style="--n:7" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(21.87 126.91) rotate(243.6) scale(0.784)"><path class="leaf" style="--n:8" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(21.87 126.91) rotate(311.6) scale(0.784)"><path class="leaf" style="--n:8" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(26.28 108.10) rotate(254.8) scale(0.757)"><path class="leaf" style="--n:9" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(26.28 108.10) rotate(322.8) scale(0.757)"><path class="leaf" style="--n:9" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(34.26 90.50) rotate(266.0) scale(0.730)"><path class="leaf" style="--n:10" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(34.26 90.50) rotate(334.0) scale(0.730)"><path class="leaf" style="--n:10" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(45.51 74.79) rotate(277.2) scale(0.703)"><path class="leaf" style="--n:11" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(45.51 74.79) rotate(345.2) scale(0.703)"><path class="leaf" style="--n:11" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(59.60 61.56) rotate(288.4) scale(0.676)"><path class="leaf" style="--n:12" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(59.60 61.56) rotate(356.4) scale(0.676)"><path class="leaf" style="--n:12" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(74.13 52.27) rotate(332.4) scale(.66)"><path class="leaf" style="--n:13" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity=".92"/></g>
+        </g>
+        <g transform="translate(240 0) scale(-1 1)">
+          <path class="draw" d="M132.07 238.26 A99 99 0 0 1 74.13 52.27" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <g transform="translate(106.22 238.04) rotate(154.0) scale(1.000)"><path class="leaf" style="--n:0" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(106.22 238.04) rotate(222.0) scale(1.000)"><path class="leaf" style="--n:0" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(87.44 233.49) rotate(165.2) scale(0.973)"><path class="leaf" style="--n:1" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(87.44 233.49) rotate(233.2) scale(0.973)"><path class="leaf" style="--n:1" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(69.90 225.39) rotate(176.4) scale(0.946)"><path class="leaf" style="--n:2" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(69.90 225.39) rotate(244.4) scale(0.946)"><path class="leaf" style="--n:2" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(54.27 214.03) rotate(187.6) scale(0.919)"><path class="leaf" style="--n:3" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(54.27 214.03) rotate(255.6) scale(0.919)"><path class="leaf" style="--n:3" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(41.14 199.86) rotate(198.8) scale(0.892)"><path class="leaf" style="--n:4" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(41.14 199.86) rotate(266.8) scale(0.892)"><path class="leaf" style="--n:4" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(31.02 183.40) rotate(210.0) scale(0.865)"><path class="leaf" style="--n:5" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(31.02 183.40) rotate(278.0) scale(0.865)"><path class="leaf" style="--n:5" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(24.28 165.29) rotate(221.2) scale(0.838)"><path class="leaf" style="--n:6" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(24.28 165.29) rotate(289.2) scale(0.838)"><path class="leaf" style="--n:6" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(21.20 146.22) rotate(232.4) scale(0.811)"><path class="leaf" style="--n:7" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(21.20 146.22) rotate(300.4) scale(0.811)"><path class="leaf" style="--n:7" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(21.87 126.91) rotate(243.6) scale(0.784)"><path class="leaf" style="--n:8" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(21.87 126.91) rotate(311.6) scale(0.784)"><path class="leaf" style="--n:8" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(26.28 108.10) rotate(254.8) scale(0.757)"><path class="leaf" style="--n:9" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(26.28 108.10) rotate(322.8) scale(0.757)"><path class="leaf" style="--n:9" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(34.26 90.50) rotate(266.0) scale(0.730)"><path class="leaf" style="--n:10" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(34.26 90.50) rotate(334.0) scale(0.730)"><path class="leaf" style="--n:10" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(45.51 74.79) rotate(277.2) scale(0.703)"><path class="leaf" style="--n:11" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(45.51 74.79) rotate(345.2) scale(0.703)"><path class="leaf" style="--n:11" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(59.60 61.56) rotate(288.4) scale(0.676)"><path class="leaf" style="--n:12" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.92"/></g>
+          <g transform="translate(59.60 61.56) rotate(356.4) scale(0.676)"><path class="leaf" style="--n:12" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity="0.6"/></g>
+          <g transform="translate(74.13 52.27) rotate(332.4) scale(.66)"><path class="leaf" style="--n:13" d="M0,0 C5,-4.8 13,-4.4 18.5,0 C13,4.4 5,4.8 0,0Z" fill="currentColor" opacity=".92"/></g>
+        </g>
+        <!-- ribbon bow -->
+        <g stroke="var(--gold)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path class="draw" d="M120 239 c-9 -8 -19 -5 -17 2 c2 6 11 4 17 -2 c9 -8 19 -5 17 2 c-2 6 -11 4 -17 -2"/>
+          <path class="draw" d="M120 239 l-8 15 M120 239 l8 15"/>
+        </g>
+
+        <!-- budded cross -->
+        <g stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+          <path class="draw" d="M120 15 V56 M108.5 28 H131.5"/>
+        </g>
+        <g fill="currentColor" class="ringtext">
+          <circle cx="120" cy="12.5" r="2.5"/><circle cx="106" cy="28" r="2.5"/><circle cx="134" cy="28" r="2.5"/>
+        </g>
+
+        <!-- seal rings -->
+        <circle class="draw" cx="120" cy="140" r="84" stroke="currentColor" stroke-width="1.7"/>
+        <circle class="draw" cx="120" cy="140" r="86.8" stroke="currentColor" stroke-width=".6" opacity=".7"/>
+        <circle class="draw" cx="120" cy="140" r="65.5" stroke="currentColor" stroke-width="1"/>
+        <circle class="ringtext" cx="120" cy="140" r="61.5" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="0.1 4.2" stroke-linecap="round"/>
+
+        <!-- legend around the band -->
+        <g class="ringtext" fill="currentColor" font-family="IM Fell English SC, IM Fell English, Georgia, serif" font-size="9.2" letter-spacing="2.1">
+          <text text-anchor="middle"><textPath href="#crest-arc-top" startOffset="50%">KEVIN JOSE ✦ TREESA SYRIL</textPath></text>
+          <text text-anchor="middle"><textPath href="#crest-arc-bot" startOffset="50%">ANNO DOMINI · MMXXVII</textPath></text>
+        </g>
+        <g class="ringtext" fill="var(--gold)">
+          <path d="M45 136.4l3.6 3.6-3.6 3.6-3.6-3.6z"/><path d="M195 136.4l3.6 3.6-3.6 3.6-3.6-3.6z"/>
+        </g>
+
+        <!-- the monogram -->
+        <g class="mono-l">
+          <text x="120" y="158" text-anchor="middle" font-family="Pinyon Script, cursive" font-size="42" fill="var(--gold)">&amp;</text>
+          <text x="104" y="160" text-anchor="end" font-family="IM Fell English, Georgia, serif" font-size="57" fill="currentColor">K</text>
+          <text x="136" y="160" text-anchor="start" font-family="IM Fell English, Georgia, serif" font-size="57" fill="currentColor">T</text>
+          <g stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".85">
+            <path d="M92 175 h20 M128 175 h20"/><path d="M98 105.5 h14 M128 105.5 h14"/>
+          </g>
+          <path d="M120 171.4l3.6 3.6-3.6 3.6-3.6-3.6z" fill="var(--gold)"/>
+          <path d="M120 100.5l1.7 3.3 3.3 1.7-3.3 1.7-1.7 3.3-1.7-3.3-3.3-1.7 3.3-1.7z" fill="var(--gold)"/>
+        </g>
+      </svg>
       <p class="announce">Together with their families, and by the grace of God,<br>
       is announced the Holy Matrimony of</p>
 
       <h1>
-        Kevin&nbsp;Jose
+        <span class="line">Kevin&nbsp;Jose</span>
         <span class="amp">and</span>
-        <span class="hon">Dr.</span>&nbsp;Treesa&nbsp;Syril
+        <span class="line"><span class="hon">Dr.</span>&nbsp;Treesa&nbsp;Syril</span>
       </h1>
 
       <div class="rule-dot"><span>❦</span></div>
@@ -498,6 +874,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
           things, hopes all things, endures all things.”
           <cite>— 1 Corinthians 13 : 4–7</cite>
         </blockquote>
+        <span class="margin-note" style="--mr:-4deg">the tea really did go cold, by the way…</span>
       </div>
     </div>
   </div>
@@ -514,6 +891,22 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
   </div>
 </figure>
 
+<!-- ═══════════════ COUNTDOWN ═══════════════ -->
+<section class="countdown reveal" id="countdown">
+  <div class="sheet" id="count-wrap">
+    <p class="eyebrow">until the bells ring</p>
+    <div class="count-grid">
+      <div class="count-cell"><b id="cd-days">—</b><span>days</span></div>
+      <div class="count-cell"><b id="cd-hours">—</b><span>hours</span></div>
+      <div class="count-cell"><b id="cd-mins">—</b><span>minutes</span></div>
+      <div class="count-cell"><b id="cd-secs">—</b><span>seconds</span></div>
+    </div>
+    <p class="count-foot">— until Kevin &amp; Treesa say <em>“I do”</em> —<br>
+      <span>Saturday, the sixteenth of January, MMXXVII · four o’clock in the afternoon</span></p>
+    <button class="cal-btn" type="button">add to your calendar ↧</button>
+  </div>
+</section>
+
 <!-- ═══════════════ PROGRAM ═══════════════ -->
 <section id="program">
   <div class="sheet">
@@ -523,7 +916,8 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
     has already unfolded, and as it shall, God willing.</p>
 
     <div class="playbill">
-      <article class="act reveal">
+      <i class="rail" aria-hidden="true"></i>
+      <article class="act reveal" data-when="2026-01-15T10:00:00+05:30">
         <div class="numeral"><b>I</b><span>the first visit</span></div>
         <div class="detail">
           <h3>Pennukanal</h3>
@@ -539,7 +933,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
         </div>
       </article>
 
-      <article class="act reveal">
+      <article class="act reveal" data-when="2026-09-20T10:00:00+05:30">
         <div class="numeral"><b>II</b><span>the fixation</span></div>
         <div class="detail">
           <h3>Urappikkal — The Fixation</h3>
@@ -555,7 +949,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
         </div>
       </article>
 
-      <article class="act reveal">
+      <article class="act reveal" data-when="2026-11-14T12:00:00+05:30">
         <div class="numeral"><b>III</b><span>the betrothal</span></div>
         <div class="detail">
           <h3>Manassammadham</h3>
@@ -566,7 +960,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
         </div>
       </article>
 
-      <article class="act reveal">
+      <article class="act reveal" data-when="2027-01-14T18:00:00+05:30">
         <div class="numeral"><b>IV</b><span>her sweetening</span></div>
         <div class="detail">
           <h3>Madhuram Veppu — the Bride’s</h3>
@@ -577,7 +971,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
         </div>
       </article>
 
-      <article class="act reveal">
+      <article class="act reveal" data-when="2027-01-15T18:00:00+05:30">
         <div class="numeral"><b>V</b><span>his sweetening</span></div>
         <div class="detail">
           <h3>Madhuram Veppu — the Groom’s</h3>
@@ -587,7 +981,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
         </div>
       </article>
 
-      <article class="act reveal">
+      <article class="act reveal" data-when="2027-01-16T16:00:00+05:30">
         <div class="numeral"><b>VI</b><span>the sacrament</span></div>
         <div class="detail">
           <h3>Holy Matrimony &amp; Reception</h3>
@@ -596,6 +990,7 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
           followed at six o’clock by the reception banquet at Trinita Casa
           Events Centre, Varapuzha — the cutting of the cake, toasts from
           both houses, and dinner beneath the lanterns.</p>
+          <span class="margin-note" style="--mr:2.5deg">the day two become one ❧</span>
         </div>
       </article>
     </div>
@@ -615,67 +1010,93 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
     drive apart, by the backwaters of Varapuzha.</p>
 
     <div class="venues">
-      <div class="venue reveal">
-        <svg class="glyph" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          <path d="M28 4v8 M24 8h8" stroke-linecap="round"/>
-          <path d="M18 52V30l10-9 10 9v22" />
-          <path d="M8 52V36l10-6M48 52V36l-10-6 M4 52h48"/>
-          <path d="M25 52v-9a3 3 0 0 1 6 0v9" />
-        </svg>
-        <p class="kind">the ceremony · 4 o’clock</p>
-        <h3>St. George Puthenpally Church</h3>
-        <p class="addr">Puthenpally, Kerala<br><span style="font-size:.9em">(full address to follow)</span></p>
-        <p class="note">The Solemn Nuptial Mass begins at four o’clock in
-        the afternoon; guests are kindly requested to be seated by half
-        past three, before the bridal procession. Travel notes and parking
-        directions to follow.</p>
-        <a class="map" href="https://maps.google.com/?q=St+George+Puthenpally+Church" target="_blank" rel="noopener">consult the map →</a>
+      <div class="venue-flip reveal" aria-label="The ceremony venue — select to turn the card">
+        <div class="vf-inner">
+          <div class="venue vf-front">
+            <svg class="glyph" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M28 4v8 M24 8h8" stroke-linecap="round"/>
+              <path d="M18 52V30l10-9 10 9v22" />
+              <path d="M8 52V36l10-6M48 52V36l-10-6 M4 52h48"/>
+              <path d="M25 52v-9a3 3 0 0 1 6 0v9" />
+            </svg>
+            <p class="kind">the ceremony · 4 o’clock</p>
+            <h3>St. George Puthenpally Church</h3>
+            <p class="addr">Puthenpally, Kerala<br><span style="font-size:.9em">(full address to follow)</span></p>
+            <span class="turn-hint">turn the card over ☞</span>
+          </div>
+          <div class="venue vf-back">
+            <svg class="postmark" viewBox="0 0 80 80" fill="none" stroke="currentColor" aria-hidden="true">
+              <circle cx="40" cy="40" r="34" stroke-width="1.6" stroke-dasharray="4 5"/>
+              <circle cx="40" cy="40" r="26" stroke-width="1"/>
+              <text x="40" y="37" font-family="IM Fell English SC, Georgia, serif" font-size="9" letter-spacing="1.5" fill="currentColor" stroke="none" text-anchor="middle">KERALA</text>
+              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·I·27</text>
+            </svg>
+            <p class="kind">how to find us</p>
+            <p class="note" style="border:0;margin-top:8px;padding-top:0">The Solemn Nuptial
+            Mass begins at four o’clock in the afternoon; kindly be seated
+            by half past three, before the bridal procession. Travel notes
+            &amp; parking directions to follow.</p>
+            <div><a class="map" href="https://maps.google.com/?q=St+George+Puthenpally+Church" target="_blank" rel="noopener">consult the map →</a></div>
+          </div>
+        </div>
       </div>
 
-      <div class="venue reveal">
-        <svg class="glyph" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          <path d="M18 8h20l-7 14v10c0 4 3 6 7 7v3H18v-3c4-1 7-3 7-7V22L18 8z"/>
-          <path d="M22 14h12" opacity=".7"/>
-          <circle cx="28" cy="48" r="1" fill="currentColor"/>
-        </svg>
-        <p class="kind">the reception · 6 o’clock</p>
-        <h3>Trinita Casa Events Centre</h3>
-        <p class="addr">Varapuzha, Ernakulam<br>Kerala</p>
-        <p class="note">The reception banquet from six o’clock in the
-        evening — the cutting of the cake, toasts from both houses, and
-        dinner. A short drive from the church; detailed directions and
-        travel notes to follow.</p>
-        <a class="map" href="https://maps.google.com/?q=Trinita+Casa+Events+Centre+Varapuzha" target="_blank" rel="noopener">consult the map →</a>
+      <div class="venue-flip reveal" aria-label="The reception venue — select to turn the card">
+        <div class="vf-inner">
+          <div class="venue vf-front">
+            <svg class="glyph" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M18 8h20l-7 14v10c0 4 3 6 7 7v3H18v-3c4-1 7-3 7-7V22L18 8z"/>
+              <path d="M22 14h12" opacity=".7"/>
+              <circle cx="28" cy="48" r="1" fill="currentColor"/>
+            </svg>
+            <p class="kind">the reception · 6 o’clock</p>
+            <h3>Trinita Casa Events Centre</h3>
+            <p class="addr">Varapuzha, Ernakulam<br>Kerala</p>
+            <span class="turn-hint">turn the card over ☞</span>
+          </div>
+          <div class="venue vf-back">
+            <svg class="postmark" viewBox="0 0 80 80" fill="none" stroke="currentColor" aria-hidden="true">
+              <circle cx="40" cy="40" r="34" stroke-width="1.6" stroke-dasharray="4 5"/>
+              <circle cx="40" cy="40" r="26" stroke-width="1"/>
+              <text x="40" y="37" font-family="IM Fell English SC, Georgia, serif" font-size="9" letter-spacing="1.5" fill="currentColor" stroke="none" text-anchor="middle">VARAPUZHA</text>
+              <text x="40" y="50" font-family="IM Fell English SC, Georgia, serif" font-size="8" letter-spacing="1" fill="currentColor" stroke="none" text-anchor="middle">16·I·27</text>
+            </svg>
+            <p class="kind">how to find us</p>
+            <p class="note" style="border:0;margin-top:8px;padding-top:0">The reception banquet
+            from six o’clock in the evening — the cutting of the cake,
+            toasts from both houses, and dinner. A short drive from the
+            church; detailed directions to follow.</p>
+            <div><a class="map" href="https://maps.google.com/?q=Trinita+Casa+Events+Centre+Varapuzha" target="_blank" rel="noopener">consult the map →</a></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════ ATTIRE ═══════════════ -->
-<section id="attire">
+<!-- ═══════════════ CANDLES ═══════════════ -->
+<section id="candles">
   <div class="sheet">
-    <p class="eyebrow reveal">a note on dress</p>
-    <h2 class="display reveal">Attire &amp; Dress Code</h2>
+    <p class="eyebrow reveal">a prayer for the road</p>
+    <h2 class="display reveal">Light a Candle</h2>
+    <p class="lede reveal">In every old church there is a quiet corner
+    where small flames carry large prayers. Light one for us —
+    we shall feel its warmth.</p>
 
-    <div class="attire-box reveal">
-      <p>We invite you to dress in the old-world spirit of the day —
-      <em>formal, graceful, unhurried</em>. Saris, kasavu and silks,
-      suits of linen and cotton, church-worthy hats and heirloom
-      jewellery are all most welcome. January on the Kerala coast is warm
-      and bright; the church is cool beneath its rafters, the courtyard
-      open to the evening sky.</p>
-
-      <div class="swatches" aria-label="Suggested palette">
-        <span class="swatch"><i style="background:#e8dcc2"></i>ivory</span>
-        <span class="swatch"><i style="background:#8d9272"></i>sage</span>
-        <span class="swatch"><i style="background:#b89a5e"></i>old gold</span>
-        <span class="swatch"><i style="background:#a86f5c"></i>terracotta</span>
-        <span class="swatch"><i style="background:#705441"></i>sepia</span>
+    <div class="niche reveal">
+      <svg class="cross" viewBox="0 0 22 34" aria-hidden="true"><path d="M11 1v32M3 10h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>
+      <div class="votives" id="votives">
+        <button class="candle" type="button" style="--h:78px;--fd:-.2s"  aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:106px;--fd:-.9s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:90px;--fd:-1.4s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:120px;--fd:-.5s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:86px;--fd:-1.1s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:110px;--fd:-.7s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
+        <button class="candle" type="button" style="--h:80px;--fd:-1.6s" aria-label="Light a candle" aria-pressed="false"><span class="flame"></span><span class="wick"></span><span class="wax"></span></button>
       </div>
-
-      <p class="attire-note">We only ask that deep crimson be reserved
-      for the bride — it is rather her colour.</p>
+      <div class="ledge"></div>
     </div>
+    <p class="candle-count" id="candle-count" aria-live="polite">Seven candles wait for a flame — touch one.</p>
   </div>
 </section>
 
@@ -738,9 +1159,21 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
 
       <div class="sealed replycard" id="sealed" role="status">
         <svg viewBox="0 0 120 120" aria-hidden="true">
-          <path fill="#76241a" d="M60 6c8 0 10 5 17 5s9-4 15 1 2 9 7 15 8 5 8 13-5 10-5 17 4 9-1 15-9 2-15 7-5 8-13 8-10-5-17-5-9 4-15-1-2-9-7-15-8-5-8-13 5-10 5-17-4-9 1-15 9-2 15-7 5-8 13-8z"/>
-          <path fill="#5e1c13" d="M60 14c6.5 0 8.2 4 14 4s7.4-3.2 12.3.9 1.6 7.4 5.7 12.3 6.6 4.1 6.6 10.7-4 8.2-4 14 3.2 7.4-.9 12.3-7.4 1.6-12.3 5.7-4.1 6.6-10.7 6.6-8.2-4-14-4-7.4 3.2-12.3-.9-1.6-7.4-5.7-12.3-6.6-4.1-6.6-10.7 4-8.2 4-14-3.2-7.4.9-12.3 7.4-1.6 12.3-5.7 4.1-6.6 10.7-6.6z" opacity=".5"/>
-          <text x="60" y="72" font-family="IM Fell English, Georgia, serif" font-size="30" fill="#e9d7b2" text-anchor="middle">K·T</text>
+          <defs>
+            <radialGradient id="wax-b" cx="40%" cy="34%" r="75%">
+              <stop offset="0" stop-color="#96392a"/><stop offset=".55" stop-color="#6f2116"/><stop offset="1" stop-color="#55160e"/>
+            </radialGradient>
+            <linearGradient id="press-b" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#541510"/><stop offset="1" stop-color="#78271b"/>
+            </linearGradient>
+          </defs>
+          <path fill="url(#wax-b)" d="M109.25 60.00 L109.27 62.58 L109.07 65.16 L108.56 67.69 L107.78 70.16 L106.85 72.55 L105.91 74.92 L105.00 77.27 L104.07 79.62 L102.97 81.89 L101.55 83.99 L99.76 85.82 L97.67 87.37 L95.51 88.75 L93.50 90.16 L91.78 91.78 L90.36 93.72 L89.09 95.92 L87.73 98.17 L86.09 100.17 L84.08 101.70 L81.74 102.66 L79.20 103.13 L76.62 103.30 L74.10 103.39 L71.66 103.52 L69.29 103.71 L66.95 103.86 L64.61 103.91 L62.30 103.84 L60.00 103.74 L57.71 103.78 L55.37 104.06 L52.94 104.58 L50.40 105.15 L47.80 105.53 L45.22 105.49 L42.76 104.90 L40.47 103.87 L38.29 102.61 L36.10 101.40 L33.76 100.41 L31.21 99.63 L28.49 98.91 L25.78 98.00 L23.32 96.68 L21.30 94.85 L19.78 92.57 L18.73 89.99 L18.00 87.28 L17.45 84.57 L17.01 81.90 L16.72 79.27 L16.62 76.65 L16.74 74.06 L17.00 71.52 L17.22 69.09 L17.20 66.78 L16.81 64.54 L16.09 62.30 L15.25 60.00 L14.59 57.62 L14.39 55.21 L14.76 52.83 L15.59 50.56 L16.64 48.38 L17.59 46.22 L18.27 43.98 L18.64 41.59 L18.89 39.05 L19.25 36.47 L19.94 33.98 L21.05 31.70 L22.55 29.68 L24.30 27.86 L26.16 26.16 L28.06 24.53 L30.01 22.97 L32.06 21.55 L34.25 20.35 L36.56 19.40 L38.89 18.58 L41.17 17.70 L43.33 16.57 L45.40 15.08 L47.49 13.30 L49.69 11.52 L52.09 10.06 L54.66 9.24 L57.34 9.16 L60.00 9.74 L62.58 10.71 L65.07 11.77 L67.49 12.69 L69.89 13.45 L72.28 14.16 L74.62 15.00 L76.84 16.12 L78.90 17.55 L80.79 19.19 L82.58 20.90 L84.32 22.56 L86.04 24.16 L87.72 25.76 L89.28 27.48 L90.64 29.36 L91.81 31.36 L92.93 33.33 L94.21 35.15 L95.85 36.72 L97.95 38.09 L100.44 39.40 L103.04 40.84 L105.40 42.57 L107.22 44.66 L108.37 47.04 L108.92 49.60 L109.08 52.23 L109.11 54.84 L109.16 57.42Z"/>
+          <circle cx="60" cy="60" r="35" fill="url(#press-b)"/>
+          <circle cx="60" cy="60" r="35" fill="none" stroke="rgba(30,8,4,.45)" stroke-width="1.4"/>
+          <path d="M35.3 84.7 A35 35 0 0 0 84.7 35.3" fill="none" stroke="rgba(255,214,180,.28)" stroke-width="1.1"/>
+          <circle cx="60" cy="60" r="30.5" fill="none" stroke="rgba(236,217,176,.4)" stroke-width=".7"/>
+          <text x="60" y="69.6" font-family="IM Fell English, Georgia, serif" font-size="27" fill="#ecd9b0" text-anchor="middle">K·T</text>
+          <ellipse cx="43" cy="33" rx="15" ry="7.5" transform="rotate(-36 43 33)" fill="#fff" opacity=".11"/>
         </svg>
         <h3>Your reply is sealed.</h3>
         <p id="sealed-msg">Thank you — we shall lay a place for you,
@@ -758,16 +1191,218 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
     <span class="rule"></span>
   </div>
   <p class="mono">K &nbsp;·&nbsp; T</p>
-  <p class="vale">With all our love, until January —</p>
+  <p class="vale reveal"><span class="written">With all our love, until January —</span></p>
   <p style="font-style:italic;color:var(--ink-soft)">Kevin &amp; Treesa</p>
+  <p class="credit reveal"><span class="written">designed &amp; developed with the guidance of my evergorgeous angel, <em>Treesa</em></span></p>
   <small>kerala · anno domini mmxxvii · “what god has joined together”</small>
 </footer>
 
+<svg class="rings" viewBox="0 0 96 34" aria-hidden="true">
+  <path class="spark" d="M48 0l1.6 3.4 3.4 1.6-3.4 1.6-1.6 3.4-1.6-3.4-3.4-1.6 3.4-1.6z"/>
+  <circle id="ring-l" cx="12" cy="22" r="10"/>
+  <circle id="ring-r" cx="84" cy="22" r="10"/>
+</svg>
+
 <script>
-/* scroll-reveal */
 (function(){
+'use strict';
+var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ———————————————————— hero names → letters ———————————————————— */
+(function(){
+  var h1 = document.querySelector('.hero h1'); if(!h1) return;
+  var idx = 0;
+  function walk(parent){
+    Array.prototype.slice.call(parent.childNodes).forEach(function(n){
+      if (n.nodeType === 3){
+        var frag = document.createDocumentFragment();
+        n.textContent.split('').forEach(function(ch){
+          if (!ch.trim()){ frag.appendChild(document.createTextNode(ch)); return; }
+          var s = document.createElement('span');
+          s.className = 'L'; s.style.setProperty('--i', idx++); s.textContent = ch;
+          frag.appendChild(s);
+        });
+        parent.replaceChild(frag, n);
+      } else if (n.nodeType === 1){
+        if (n.classList.contains('line')){ walk(n); }
+        else { n.classList.add('L'); n.style.setProperty('--i', idx); idx += 3; }
+      }
+    });
+  }
+  walk(h1);
+})();
+
+/* ———————————————————— the score: seal-crack, harp, strings & bronze bells (all synthesized) ———————————————————— */
+var audioCtx = null;
+function ktScore(ctx, kind){
+  var t0 = ctx.currentTime + .06;
+  var bus = ctx.createGain(), dry = ctx.createGain(), wet = ctx.createGain(), master = ctx.createGain();
+  var comp = ctx.createDynamicsCompressor(), hall = ctx.createConvolver();
+  dry.gain.value = .8; wet.gain.value = .5; master.gain.value = .9;
+  comp.threshold.value = -16; comp.ratio.value = 4; comp.attack.value = .004; comp.release.value = .3;
+
+  /* a cathedral, generated: three seconds of decaying stereo noise */
+  var len = Math.floor(ctx.sampleRate * 3.4), ir = ctx.createBuffer(2, len, ctx.sampleRate);
+  for (var ch = 0; ch < 2; ch++){
+    var d = ir.getChannelData(ch);
+    for (var i = 0; i < len; i++){
+      var x = i / len;
+      d[i] = (Math.random()*2 - 1) * Math.pow(1 - x, 2.8) * (x < .01 ? x / .01 : 1);
+    }
+  }
+  hall.buffer = ir;
+  bus.connect(dry); bus.connect(hall); hall.connect(wet);
+  dry.connect(master); wet.connect(master); master.connect(comp); comp.connect(ctx.destination);
+
+  function env(g, t, peak, attack, decay){
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + attack);
+    g.gain.exponentialRampToValueAtTime(.0001, t + attack + decay);
+  }
+  function osc(type, f, t, stop, dest, detune){
+    var o = ctx.createOscillator(); o.type = type; o.frequency.value = f;
+    if (detune) o.detune.value = detune;
+    o.connect(dest); o.start(t); o.stop(stop);
+  }
+  /* cast bronze: hum, prime, tierce, quint, nominal and upper partials, each dying at its own pace */
+  function bell(f, t, vol){
+    [[.5,.55,4.8],[1,1,3.7],[1.183,.42,3],[1.506,.3,2.4],[2,.5,2],[2.514,.2,1.5],[3.011,.13,1.1],[4.166,.07,.8]]
+    .forEach(function(p, i){
+      var g = ctx.createGain(); env(g, t, vol * p[1], .006, p[2]); g.connect(bus);
+      osc('sine', f * p[0], t, t + p[2] + .1, g, i % 2 ? 4 : -3);
+    });
+  }
+  function harp(f, t, vol){
+    var a = ctx.createGain(); env(a, t, vol, .005, 1.9); a.connect(bus); osc('triangle', f, t, t + 2.1, a);
+    var b = ctx.createGain(); env(b, t, vol * .5, .005, 1.4); b.connect(bus); osc('sine', f * 2, t, t + 1.6, b);
+    var c = ctx.createGain(); env(c, t, vol * .3, .003, .5); c.connect(bus); osc('sine', f * 3, t, t + .7, c);
+  }
+  function strings(freqs, t, dur, vol){
+    var lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 850; lp.Q.value = .4;
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + 1.5);
+    g.gain.setValueAtTime(vol, t + dur - 2.4);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    lp.connect(g); g.connect(bus);
+    freqs.forEach(function(f){
+      osc('sawtooth', f, t, t + dur + .1, lp, -7);
+      osc('sawtooth', f, t, t + dur + .1, lp, 7);
+    });
+  }
+  function crack(t){
+    var n = Math.floor(ctx.sampleRate * .09), buf = ctx.createBuffer(1, n, ctx.sampleRate), d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = (Math.random()*2 - 1) * Math.pow(1 - i / n, 3);
+    var src = ctx.createBufferSource(); src.buffer = buf;
+    var bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1900; bp.Q.value = .9;
+    var g = ctx.createGain(); g.gain.value = .5;
+    src.connect(bp); bp.connect(g); g.connect(bus); src.start(t);
+  }
+
+  var D4 = 293.66, A4 = 440, D5 = 587.33, Fs5 = 739.99, A5 = 880, D6 = 1174.66, Fs6 = 1479.98;
+  if (kind === 'open'){
+    crack(t0);
+    strings([146.83, 220, D4, 369.99], t0 + .15, 6.4, .045);
+    [D4, A4, D5, Fs5, A5, D6, Fs6].forEach(function(f, i){ harp(f, t0 + .3 + i * .13, .12 - .008 * i); });
+    bell(Fs5, t0 + 1.5, .15); bell(D5, t0 + 2.1, .15); bell(A4, t0 + 2.7, .17); bell(D4, t0 + 3.5, .2);
+  } else if (kind === 'peal'){
+    bell(A5, t0, .11); bell(Fs5, t0 + .42, .13); bell(D5, t0 + .84, .14); bell(A4, t0 + 1.26, .16);
+    bell(Fs5, t0 + 1.9, .1); bell(D5, t0 + 2.32, .13); bell(D4, t0 + 2.9, .19);
+  } else { /* a small chime of thanks */
+    harp(D5, t0, .12); harp(A5, t0 + .14, .1); harp(D6, t0 + .28, .09);
+    bell(D5, t0 + .5, .13);
+  }
+}
+function ktPlay(kind){
+  try{
+    var C = window.AudioContext || window.webkitAudioContext; if(!C) return;
+    var ctx = audioCtx || (audioCtx = new C());
+    if (ctx.state === 'suspended') ctx.resume();
+    ktScore(ctx, kind);
+  }catch(e){}
+}
+window.ktScore = ktScore;
+
+/* ———————————————————— the sealed letter ———————————————————— */
+(function(){
+  var overlay = document.getElementById('letter');
+  function finish(slow){
+    document.body.classList.add('enter', 'letter-done');
+    document.body.classList.remove('letter-wait');
+    try{ sessionStorage.setItem('kt-letter','1'); }catch(e){}
+    if (overlay) setTimeout(function(){ overlay.remove(); overlay = null; }, slow ? 1200 : 0);
+  }
+  if (!document.documentElement.classList.contains('js-letter') || !overlay){
+    if (overlay) overlay.remove();
+    document.body.classList.add('enter', 'letter-done');
+    return;
+  }
+  document.body.classList.add('letter-wait');
+  var env = overlay.querySelector('.envelope'), opened = false;
+  document.getElementById('break-seal').addEventListener('click', function(){
+    if (opened) return; opened = true;
+    env.classList.add('open');
+    ktPlay('open');
+    setTimeout(function(){ finish(true); }, 1500);
+  });
+  document.getElementById('skip-letter').addEventListener('click', function(){ finish(false); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && overlay) finish(false);
+  });
+})();
+
+/* ———————————————————— dust motes in the hero ———————————————————— */
+(function(){
+  if (reduced) return;
+  var host = document.querySelector('.hero-frame'); if(!host) return;
+  var cv = document.createElement('canvas'); cv.className = 'dust';
+  host.prepend(cv);
+  var ctx = cv.getContext('2d'), W, H, run = false;
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function size(){
+    W = host.clientWidth; H = host.clientHeight;
+    cv.width = W * DPR; cv.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  size(); addEventListener('resize', size);
+  var ps = [];
+  for (var i = 0; i < 34; i++) ps.push({
+    x: Math.random(), y: Math.random(), r: .6 + Math.random()*1.3,
+    a: .08 + Math.random()*.28, s: .05 + Math.random()*.2, ph: Math.random()*6.28
+  });
+  function frame(t){
+    if (!run) return;
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < ps.length; i++){
+      var p = ps[i];
+      p.y -= p.s * 2.4 / H;
+      if (p.y < -0.02){ p.y = 1.02; p.x = Math.random(); }
+      var x = p.x * W + Math.sin(t/1800 + p.ph) * 14;
+      var tw = p.a * (.7 + .3 * Math.sin(t/700 + p.ph*3));
+      ctx.beginPath(); ctx.arc(x, p.y * H, p.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(186,150,80,' + tw.toFixed(3) + ')'; ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  function wake(){ if (!run){ run = true; requestAnimationFrame(frame); } }
+  new IntersectionObserver(function(es){
+    if (es[0].isIntersecting && !document.hidden) wake(); else run = false;
+  }, { threshold: 0 }).observe(host);
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden){ run = false; }
+    else { var r = host.getBoundingClientRect(); if (r.bottom > 0 && r.top < innerHeight) wake(); }
+  });
+})();
+
+/* ———————————————————— scroll-reveal ———————————————————— */
+(function(){
+  document.querySelectorAll('h2.display').forEach(function(h){
+    var s = document.createElement('span'); s.className = 'ink';
+    while (h.firstChild) s.appendChild(h.firstChild);
+    h.appendChild(s);
+  });
   var els = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); return; }
+  if (!('IntersectionObserver' in window)){ els.forEach(function(e){ e.classList.add('in'); }); return; }
   var io = new IntersectionObserver(function(entries){
     entries.forEach(function(en){
       if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
@@ -776,27 +1411,144 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
   els.forEach(function(e){ io.observe(e); });
 })();
 
-/* gentle parallax on the garden plate */
+/* ———————————————————— photographs waking into colour ———————————————————— */
+(function(){
+  var tins = document.querySelectorAll('.tintype');
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ e.target.classList.toggle('awake', e.isIntersecting); });
+  }, { threshold:.5 });
+  tins.forEach(function(t){ io.observe(t); });
+})();
+
+/* ———————————————————— garden plate parallax ———————————————————— */
 (function(){
   var img = document.getElementById('parallax-img');
-  if (!img || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!img || reduced) return;
   var ticking = false;
   function update(){
     ticking = false;
     var r = img.parentElement.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight) return;
-    var p = (r.top + r.height/2 - innerHeight/2) / innerHeight; /* -0.5 … 0.5 */
+    var p = (r.top + r.height/2 - innerHeight/2) / innerHeight;
     img.style.transform = 'scale(1.12) translateY(' + (p * -34).toFixed(1) + 'px)';
   }
   addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
   update();
 })();
 
-/* the reply card */
+/* ———————————————————— the timeline draws itself in ink ———————————————————— */
+(function(){
+  var pb = document.querySelector('.playbill');
+  var rail = pb && pb.querySelector('.rail');
+  if (!rail) return;
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var r = pb.getBoundingClientRect();
+    var p = (innerHeight * .78 - r.top) / r.height;
+    rail.style.transform = 'scaleY(' + Math.max(0, Math.min(1, p)).toFixed(4) + ')';
+  }
+  addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+  update();
+})();
+
+/* ———————————————————— countdown to the bells ———————————————————— */
+(function(){
+  var target = new Date('2027-01-16T16:00:00+05:30').getTime();
+  var els = ['cd-days','cd-hours','cd-mins','cd-secs'].map(function(id){ return document.getElementById(id); });
+  if (!els[0]) return;
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function tick(){
+    var d = target - Date.now();
+    if (d <= 0){
+      document.getElementById('count-wrap').innerHTML =
+        '<p class="eyebrow">the sixteenth of january</p><p class="count-married">— and so they were married —</p>';
+      return;
+    }
+    var s = Math.floor(d / 1000);
+    var vals = [Math.floor(s/86400), Math.floor(s/3600) % 24, Math.floor(s/60) % 60, s % 60];
+    els.forEach(function(el, i){
+      var v = i ? pad(vals[i]) : String(vals[i]);
+      if (el.textContent !== v){
+        el.textContent = v;
+        if (!reduced){ el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); }
+      }
+    });
+    setTimeout(tick, 1050 - (Date.now() % 1000));
+  }
+  tick();
+})();
+
+/* ———————————————————— add to calendar (.ics) ———————————————————— */
+(function(){
+  function ics(){
+    var lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//KT//Wedding//EN','BEGIN:VEVENT',
+      'UID:kevin-treesa-20270116@wedding','DTSTAMP:20261110T000000Z',
+      'DTSTART:20270116T103000Z','DTEND:20270116T153000Z',
+      'SUMMARY:Wedding of Kevin & Treesa',
+      'DESCRIPTION:Holy Matrimony at St. George Puthenpally Church (4 PM IST)\\, followed by the reception at Trinita Casa Events Centre\\, Varapuzha (6 PM IST).',
+      'LOCATION:St. George Puthenpally Church\\, Kerala\\, India',
+      'END:VEVENT','END:VCALENDAR'].join('\r\n');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([lines], { type:'text/calendar' }));
+    a.download = 'kevin-and-treesa-wedding.ics';
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  document.querySelectorAll('.cal-btn').forEach(function(b){ b.addEventListener('click', ics); });
+})();
+
+/* ———————————————————— venue postcards turn over ———————————————————— */
+document.querySelectorAll('.venue-flip').forEach(function(card){
+  function toggle(){ card.classList.toggle('flipped'); }
+  card.addEventListener('click', function(e){ if (e.target.closest('a')) return; toggle(); });
+  card.setAttribute('tabindex','0'); card.setAttribute('role','button');
+  card.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+  });
+});
+
+/* ———————————————————— a fall of golden petals ———————————————————— */
+function petalBurst(){
+  if (reduced) return;
+  var cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;left:0;top:0;width:100%;height:100%;z-index:95;pointer-events:none';
+  document.body.appendChild(cv);
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = innerWidth * DPR; cv.height = innerHeight * DPR;
+  var ctx = cv.getContext('2d'); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  var colors = ['#b89a5e','#9b7a3c','#7d2f22','#8d9272','#e3cf9f'];
+  var ps = [];
+  for (var i = 0; i < 90; i++) ps.push({
+    x: Math.random()*innerWidth, y: -40 - Math.random()*innerHeight*.6,
+    w: 5 + Math.random()*6, h: 2.5 + Math.random()*3,
+    vy: 1.2 + Math.random()*2.2, vx: -.6 + Math.random()*1.2,
+    r: Math.random()*6.28, vr: -.07 + Math.random()*.14,
+    c: colors[i % colors.length]
+  });
+  var t0 = performance.now();
+  (function f(t){
+    var el = t - t0;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.globalAlpha = el > 3800 ? Math.max(0, 1 - (el-3800)/900) : 1;
+    for (var i = 0; i < ps.length; i++){
+      var p = ps[i];
+      p.y += p.vy; p.x += p.vx + Math.sin(t/600 + p.r)*.6; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+      ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.ellipse(0, 0, p.w, p.h, 0, 0, 6.283); ctx.fill();
+      ctx.restore();
+    }
+    if (el < 4800) requestAnimationFrame(f); else cv.remove();
+  })(t0);
+}
+
+/* ———————————————————— the reply card ———————————————————— */
 (function(){
   var form = document.getElementById('rsvp-form');
   var sealed = document.getElementById('sealed');
   var msg = document.getElementById('sealed-msg');
+  if (!form) return;
   form.addEventListener('submit', function(ev){
     ev.preventDefault();
     var name = form.name.value.trim();
@@ -810,7 +1562,108 @@ footer small{ display:block; font-family:var(--fellsc); font-size:.64rem; letter
     form.style.display = 'none';
     sealed.classList.add('show');
     sealed.scrollIntoView({ behavior:'smooth', block:'center' });
+    if (accepts){ petalBurst(); ktPlay('chime'); }
   });
+})();
+
+/* ———————————————————— the monogram's surprise ———————————————————— */
+(function(){
+  var mono = document.querySelector('nav button.mono');
+  if (mono) mono.addEventListener('click', function(){ petalBurst(); ktPlay('peal'); });
+})();
+
+/* ———————————————————— two rings find each other ———————————————————— */
+(function(){
+  var svg = document.querySelector('.rings'); if(!svg) return;
+  var l = document.getElementById('ring-l'), r = document.getElementById('ring-r'), ticking = false;
+  function update(){
+    ticking = false;
+    var max = document.documentElement.scrollHeight - innerHeight;
+    var p = max > 0 ? Math.min(1, Math.max(0, scrollY / max)) : 0;
+    l.setAttribute('cx', (12 + p * 28).toFixed(2));
+    r.setAttribute('cx', (84 - p * 28).toFixed(2));
+    svg.classList.toggle('joined', p > .985);
+  }
+  addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+  addEventListener('resize', update);
+  update();
+})();
+
+/* ———————————————————— the timeline keeps its own calendar ———————————————————— */
+(function(){
+  var now = Date.now(), GRACE = 6 * 3600e3, foundNext = false;
+  function dayStart(ms){ var d = new Date(ms); d.setHours(0,0,0,0); return d.getTime(); }
+  document.querySelectorAll('.act[data-when]').forEach(function(act){
+    var t = new Date(act.getAttribute('data-when')).getTime();
+    var detail = act.querySelector('.detail');
+    if (isNaN(t) || !detail) return;
+    if (t + GRACE < now){
+      if (!act.querySelector('.stamp')){
+        var foot = act.querySelector('.act-foot');
+        if (!foot){
+          foot = document.createElement('div'); foot.className = 'act-foot';
+          detail.insertBefore(foot, detail.querySelector('.margin-note'));
+        }
+        var s = document.createElement('span'); s.className = 'stamp'; s.textContent = '✓ completed';
+        foot.insertBefore(s, foot.firstChild);
+      }
+    } else if (!foundNext){
+      foundNext = true; act.classList.add('next');
+      var days = Math.round((dayStart(t) - dayStart(now)) / 864e5);
+      var b = document.createElement('span'); b.className = 'next-badge';
+      b.textContent = 'up next · ' + (days <= 0 ? 'today' : days === 1 ? 'tomorrow' : 'in ' + days + ' days');
+      detail.insertBefore(b, detail.firstChild);
+    }
+  });
+})();
+
+/* ———————————————————— light a candle ———————————————————— */
+(function(){
+  var wrap = document.getElementById('votives'); if(!wrap) return;
+  var candles = Array.prototype.slice.call(wrap.querySelectorAll('.candle'));
+  var out = document.getElementById('candle-count');
+  var words = ['No','One','Two','Three','Four','Five','Six','Seven'];
+  var lit = [];
+  try{ lit = JSON.parse(localStorage.getItem('kt-candles') || '[]'); }catch(e){}
+  if (!Array.isArray(lit)) lit = [];
+  function say(){
+    var n = wrap.querySelectorAll('.candle.lit').length;
+    if (n === 0) out.textContent = 'Seven candles wait for a flame — touch one.';
+    else if (n === candles.length) out.innerHTML = '<b>All seven are burning.</b> Thank you — we are wrapped in your prayers.';
+    else out.innerHTML = '<b>' + words[n] + (n === 1 ? ' candle' : ' candles') + '</b> lit for Kevin &amp; Treesa — thank you for the prayer.';
+  }
+  candles.forEach(function(c, i){
+    if (lit.indexOf(i) > -1){ c.classList.add('lit'); c.setAttribute('aria-pressed','true'); }
+    c.addEventListener('click', function(){
+      if (c.classList.contains('lit')) return;
+      c.classList.add('lit'); c.setAttribute('aria-pressed','true');
+      lit.push(i);
+      try{ localStorage.setItem('kt-candles', JSON.stringify(lit)); }catch(e){}
+      say();
+    });
+  });
+  say();
+})();
+
+/* ———————————————————— the portrait, held in the hand ———————————————————— */
+(function(){
+  if (reduced || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var arch = document.querySelector('.arch'); if(!arch) return;
+  var glare = document.createElement('div'); glare.className = 'glare'; arch.appendChild(glare);
+  arch.addEventListener('pointermove', function(e){
+    var r = arch.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    arch.style.transition = 'transform .18s ease-out';
+    arch.style.transform = 'perspective(1000px) rotateY(' + ((x - .5) * 9).toFixed(2) + 'deg) rotateX(' + ((.5 - y) * 7).toFixed(2) + 'deg)';
+    glare.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+    glare.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+  });
+  arch.addEventListener('pointerleave', function(){
+    arch.style.transition = 'transform .9s cubic-bezier(.19,1,.22,1)';
+    arch.style.transform = '';
+  });
+})();
+
 })();
 </script>
 </body>
