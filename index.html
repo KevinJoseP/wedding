@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%237d2f22'/%3E%3Ctext x='32' y='42' font-family='Georgia,serif' font-size='26' fill='%23ece0c8' text-anchor='middle'%3EK·T%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Parisienne&display=swap" rel="stylesheet">
 <style>
 /* ————————————————————————————————————————————————
    THE INK & PAPER  ·  tokens
@@ -30,7 +30,7 @@
   --fell:   "IM Fell English", "Iowan Old Style", Georgia, serif;
   --fellsc: "IM Fell English SC", "IM Fell English", Georgia, serif;
   --corm:   "Cormorant Garamond", Georgia, serif;
-  --script: "Pinyon Script", cursive;
+  --script: "Parisienne", cursive;
 }
 *{ margin:0; padding:0; box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
@@ -495,6 +495,19 @@ body.enter .hero-frame .scroll-hint{ animation:softIn 1.2s 3.4s both; }
 .postmark{ position:absolute; top:16px; right:14px; width:72px; height:72px;
   color:var(--rust); opacity:.5; transform:rotate(9deg); pointer-events:none; }
 
+/* ————— the way to the guests' guide ————— */
+.guide-card{ max-width:720px; margin:clamp(44px,7vh,70px) auto 0; text-align:center;
+  padding:clamp(30px,4.5vw,46px) clamp(24px,4vw,44px);
+  border:1px solid rgba(91,73,51,.6); background:rgba(240,229,203,.5);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px rgba(91,73,51,.35),
+              0 24px 50px -30px rgba(56,36,16,.45); }
+.guide-card h3{ font-family:var(--fell); font-weight:400; font-size:clamp(1.7rem,4vw,2.2rem); line-height:1.2; margin:.35em 0 .3em; }
+.guide-card p:not(.eyebrow){ font-size:1.15rem; color:var(--ink); max-width:520px; margin:0 auto; }
+.guide-btn{ display:inline-block; margin-top:24px; font-family:var(--corm); font-weight:600; font-size:1.1rem;
+  color:#f6ecd4; background:var(--rust); border:1px solid var(--rust-deep); padding:13px 30px;
+  text-decoration:none; box-shadow:0 12px 24px -14px rgba(89,30,20,.8); transition:background .25s, transform .25s; }
+.guide-btn:hover{ background:var(--rust-deep); transform:translateY(-1px); }
+
 /* ————— marginalia ————— */
 .margin-note{ font-family:var(--script); font-size:clamp(1.2rem,2.4vw,1.5rem); color:var(--rust);
   display:inline-block; transform:rotate(var(--mr,-3deg));
@@ -734,6 +747,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
   <button class="mono" type="button" aria-label="Ring the wedding bells">K·T</button>
   <a href="#venues">The Venues</a>
   <a href="#rsvp">R.S.V.P.</a>
+  <a href="guide.html">Guests’ Guide</a>
 </nav>
 
 <!-- ═══════════════ HERO ═══════════════ -->
@@ -846,7 +860,7 @@ footer .credit em{ font-style:normal; color:var(--rust); }
 
         <!-- the monogram -->
         <g class="mono-l">
-          <text x="120" y="158" text-anchor="middle" font-family="Pinyon Script, cursive" font-size="42" fill="var(--gold)">&amp;</text>
+          <text x="120" y="158" text-anchor="middle" font-family="Parisienne, cursive" font-size="42" fill="var(--gold)">&amp;</text>
           <text x="104" y="160" text-anchor="end" font-family="IM Fell English, Georgia, serif" font-size="57" fill="currentColor">K</text>
           <text x="136" y="160" text-anchor="start" font-family="IM Fell English, Georgia, serif" font-size="57" fill="currentColor">T</text>
           <g stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity=".85">
@@ -1120,6 +1134,14 @@ footer .credit em{ font-style:normal; color:var(--rust); }
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="guide-card reveal">
+      <p class="eyebrow">travelling from afar?</p>
+      <h3>Our Little Guide to Kerala</h3>
+      <p>Our favourite places to eat and wander, what to order when you
+      get there, and directions to each.</p>
+      <a class="guide-btn" href="guide.html">Open the guide →</a>
     </div>
   </div>
 </section>
