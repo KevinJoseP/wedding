@@ -43,18 +43,32 @@ body::after{ content:""; position:fixed; inset:0; z-index:49; pointer-events:non
 .sheet{ max-width:1100px; margin:0 auto; padding:0 clamp(22px,5vw,56px); }
 section{ padding:clamp(56px,9vh,100px) 0; }
 
-/* back to the invitation */
-.back{ position:fixed; top:28px; left:32px; z-index:47; display:inline-flex; align-items:center; gap:10px;
-  font-family:var(--corm); font-weight:600; font-size:1rem; color:var(--ink); text-decoration:none;
-  background:rgba(238,228,203,.95); border:1px solid rgba(91,73,51,.65); padding:10px 18px;
-  box-shadow:inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(91,73,51,.28), 0 14px 30px -16px rgba(56,36,16,.6);
-  transition:background .25s, color .25s; }
-.back:hover{ background:var(--rust); color:#f6ecd4; }
-.back svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-@media (max-width:1499.98px){
-  .back{ top:auto; left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%);
-    white-space:nowrap; padding:12px 24px; }
-  body{ padding-bottom:calc(70px + env(safe-area-inset-bottom, 0px)); }
+/* the dock — same floating menu as the invitation */
+.dock{ position:fixed; z-index:47; display:flex;
+  background:rgba(238,228,203,.95); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  border:1px solid rgba(91,73,51,.65);
+  box-shadow:inset 0 0 0 3px var(--paper), inset 0 0 0 4px rgba(91,73,51,.28), 0 18px 40px -18px rgba(56,36,16,.6); }
+.dock a{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  text-decoration:none; color:var(--ink); font-family:var(--corm); font-weight:600;
+  font-size:1rem; line-height:1; letter-spacing:.01em; white-space:nowrap;
+  transition:color .25s ease, background .25s ease; -webkit-tap-highlight-color:transparent; }
+.dock svg{ width:25px; height:25px; flex:none; fill:none; stroke:currentColor; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round; }
+.dock a:hover{ color:var(--rust); background:rgba(125,47,34,.08); }
+.dock a.on{ color:#f6ecd4; background:var(--rust); }
+.dock a:focus-visible{ outline:2px solid var(--gold); outline-offset:-4px; }
+@media (min-width:1280px){
+  .dock{ left:30px; top:50%; transform:translateY(-50%); flex-direction:column; padding:7px; gap:2px; }
+  .dock a{ width:86px; padding:12px 4px 11px; }
+  .dock a.out{ margin-bottom:5px; border-bottom:1px solid rgba(91,73,51,.4); padding-bottom:15px; }
+}
+@media (max-width:1279.98px){
+  .dock{ left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%);
+    width:min(calc(100vw - 22px), 540px); padding:5px; }
+  .dock a{ flex:1 1 0; min-width:0; padding:9px 1px 8px; font-size:.9rem; gap:5px; }
+  .dock svg{ width:23px; height:23px; }
+  .dock a.out{ border-right:1px solid rgba(91,73,51,.4); }
+  body{ padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* masthead */
@@ -138,10 +152,23 @@ footer p{ margin-top:26px; font-family:var(--fellsc); font-size:.76rem; letter-s
 
 <div class="plate" aria-hidden="true"></div>
 
-<a class="back" href="index.html">
-  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-  The Invitation
-</a>
+<div class="dock" role="navigation" aria-label="Guide sections">
+  <a class="out" href="index.html" aria-label="Back to the wedding invitation">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12.5" rx="1.2"/><path d="M4 7.2l8 6.3 8-6.3"/></svg>
+    <span>Invitation</span></a>
+  <a href="#food" data-spy="food">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v18M4.8 3v4.2a2.2 2.2 0 0 0 4.4 0V3"/><path d="M16.5 21V3c-2 1.7-3 4-3 6.8V13h3"/></svg>
+    <span>Food</span></a>
+  <a href="#spots" data-spy="spots">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+    <span>Spots</span></a>
+  <a href="#dishes" data-spy="dishes">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.5h17a8.5 8.5 0 0 1-17 0z"/><path d="M9 20.5h6M9.5 4c0 1.2 1.2 1.6 1.2 3M13.6 4c0 1.2 1.2 1.6 1.2 3"/></svg>
+    <span>Dishes</span></a>
+  <a href="#know" data-spy="know">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M12 11v5.2"/><path d="M12 7.8h.01" stroke-width="2.4"/></svg>
+    <span>Tips</span></a>
+</div>
 
 <header class="mast">
   <div class="sheet">
@@ -391,6 +418,27 @@ DISHES.forEach(function(d){
   w.appendChild(el('h3', null, d[0])); w.appendChild(el('p', null, d[1]));
   dishList.appendChild(w);
 });
+
+/* ———————————————————— the dock follows where you are ———————————————————— */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.dock a[data-spy]'));
+  var marks = links.map(function(a){ return [a.getAttribute('data-spy'), document.getElementById(a.getAttribute('data-spy'))]; });
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var line = innerHeight * .42, current = '';
+    marks.forEach(function(m){ if (m[1] && m[1].getBoundingClientRect().top <= line) current = m[0]; });
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) current = marks[marks.length - 1][0];
+    links.forEach(function(a){
+      var on = a.getAttribute('data-spy') === current;
+      a.classList.toggle('on', on);
+      if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+    });
+  }
+  addEventListener('scroll', function(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+  addEventListener('resize', update);
+  update();
+})();
 
 /* ———————————————————— scroll-reveal ———————————————————— */
 var els = document.querySelectorAll('.reveal');
